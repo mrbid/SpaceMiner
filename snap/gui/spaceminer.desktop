@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Space Miner
+Comment=A 3D space mining game.
+StartupNotify=false
+Exec=spaceminer
+Icon=${SNAP}/meta/gui/spaceminer.png
+Terminal=false
+Type=Application
+Categories=Application;Game;ArcadeGame;

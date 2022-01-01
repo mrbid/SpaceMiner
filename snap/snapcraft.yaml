@@ -1,0 +1,41 @@
+name: spaceminer
+base: core20
+version: '1.0'
+summary: A 3D space mining game.
+description: |
+  description coming soon
+
+grade: stable
+confinement: strict
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
+  - build-on: arm64
+    run-on: arm64
+  - build-on: armhf
+    run-on: armhf
+
+apps:
+  spaceminer:
+    extensions: [gnome-3-38]
+    command: spaceminer
+    plugs:
+    - desktop
+    - desktop-legacy
+    - gsettings
+    - opengl
+    - wayland
+    - x11
+    - joystick
+
+parts:
+  spaceminer:
+    source: https://github.com/mrbid/spaceminer
+    source-type: git
+    plugin: make
+    build-packages:
+    - libglfw3-dev
+    stage-packages:
+    - libglfw3
+    - libgles2
