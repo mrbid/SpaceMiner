@@ -228,16 +228,6 @@ void rLegs(f32 x, f32 y, f32 z, f32 rx)
         mag = 0.4f;
     mRotY(&model, mag);
 
-    // returns new player direction
-    mGetDirZ(&pld, model);
-    vInv(&pld);
-    if(ct > 0)
-    {
-        mGetDirZ(&pd, model);
-        vInv(&pd);
-        ct = 0;
-    }
-
     mMul(&modelview, &model, &view);
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
@@ -266,6 +256,16 @@ void rBody(f32 x, f32 y, f32 z, f32 rx)
     mIdent(&model);
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
+
+    // returns new player direction
+    mGetDirZ(&pld, model);
+    vInv(&pld);
+    if(ct > 0)
+    {
+        mGetDirZ(&pd, model);
+        vInv(&pd);
+        ct = 0;
+    }
 
     mMul(&modelview, &model, &view);
 
