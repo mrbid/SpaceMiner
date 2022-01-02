@@ -472,7 +472,6 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    //glUniform3f(color_id, 1.f, 0.f, 0.f);
     glUniform3f(color_id, 0.062f, 1.f, 0.873f);
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlRightFlame.vid);
