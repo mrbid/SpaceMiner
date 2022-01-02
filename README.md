@@ -19,3 +19,23 @@ You just float around and collect space rocks.
  - `Right Click` = Repel Asteroid
  - `Middle Scroll` = Zoom in/out
 
+## Downloads
+
+### Snapcraft
+https://snapcraft.io/spaceminer
+
+### AppImage
+https://github.com/mrbid/spaceminer/raw/main/Space_Miner-x86_64.AppImage
+
+### [x86_64] Linux Binary (Ubuntu 21.10)
+https://github.com/mrbid/spaceminer/raw/main/spaceminer
+
+### [ARM64] Linux Binary (Raspbian 10)
+https://github.com/mrbid/spaceminer/raw/main/spaceminer_arm
+
+### Windows Binary
+https://github.com/mrbid/spaceminer/raw/main/spaceminer.exe<br>
+https://github.com/mrbid/spaceminer/raw/main/glfw.dll
+
+## Attributions
+http://www.forrestwalter.com/icons/<br>
