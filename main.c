@@ -142,7 +142,7 @@ typedef struct
     f32 qrepel;
     f32 qfuel;
 } gi; // 4+960+32+1+20 = 1021 bytes = 1024 padded (1 kilobyte)
-gi array_rocks[ARRAY_MAX];
+gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
 sint freeRock()
@@ -223,6 +223,10 @@ void rLegs(f32 x, f32 y, f32 z, f32 rx)
     mIdent(&model);
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
+    f32 mag = vMag(pv)*32.f;
+    if(mag > 0.4f)
+        mag = 0.4f;
+    mRotY(&model, mag);
 
     // returns new player direction
     mGetDirZ(&pld, model);
@@ -321,6 +325,11 @@ void rArms(f32 x, f32 y, f32 z, f32 rx)
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
 
+    f32 mag = vMag(pv)*32.f;
+    if(mag > 0.4f)
+        mag = 0.4f;
+    mRotY(&model, mag);
+
     mMul(&modelview, &model, &view);
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
@@ -350,6 +359,11 @@ void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
 
+    f32 mag = vMag(pv)*32.f;
+    if(mag > 0.4f)
+        mag = 0.4f;
+    mRotY(&model, mag);
+
     mMul(&modelview, &model, &view);
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
@@ -378,6 +392,11 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
     mIdent(&model);
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
+
+    f32 mag = vMag(pv)*32.f;
+    if(mag > 0.4f)
+        mag = 0.4f;
+    mRotY(&model, mag);
 
     mMul(&modelview, &model, &view);
 
@@ -658,8 +677,25 @@ void rPlayer(f32 x, f32 y, f32 z, f32 rx)
     rFuel(x, y, z, rx);
     
     rArms(x, y+2.6f, z, rx);
-    rLeftFlame(x, y+2.6f, z, rx);
-    rRightFlame(x, y+2.6f, z, rx);
+
+    uint lf=0, rf=0;
+    if(keystate[0] == 1)
+        rf = 1;
+    if(keystate[1] == 1)
+        lf = 1;
+    if(keystate[2] == 1)
+        rf = 1, lf = 1;
+    if(keystate[3] == 1)
+        rf = 1, lf = 1;
+    if(keystate[4] == 1)
+        rf = 1, lf = 1;
+    if(keystate[5] == 1)
+        rf = 1, lf = 1;
+
+    if(lf == 1)
+        rLeftFlame(x, y+2.6f, z, rx);
+    if(rf == 1)
+        rRightFlame(x, y+2.6f, z, rx);
 
     rFace(x, y+3.4f, z, rx);
     rBreak(x, y+3.4f, z, rx);
@@ -914,13 +950,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if(yoffset == -1)
-    {
         zoom -= 1.0f;
-    }
     else if(yoffset == 1)
-    {
         zoom += 1.0f;
-    }
 }
 
 // void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
