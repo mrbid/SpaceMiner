@@ -123,6 +123,8 @@ ESModel mdlPrepel;
 #define THRUST_POWER 0.03f
 #define NECK_ANGLE 0.6f
 #define ROCK_DARKNESS 0.412f
+#define MAX_ROCK_SCALE 12.f
+const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
 
 #define ARRAY_MAX 2048 // 8 Megabytes of Asteroids
 typedef struct
@@ -169,7 +171,7 @@ f32 yrot = 0.f;
 f32 zoom = -25.f;
 
 // player vars
-uint so;// shield on
+f32 so;// shield on (closest distance)
 uint ct;// thrust signal
 f32 pr; // rotation
 vec pp; // position
@@ -191,7 +193,8 @@ void timestamp(char* ts)
 //*************************************
 // render functions
 //*************************************
-
+uint nr=0;
+uint nsw=0;
 void rRock(uint i, f32 dist)
 {
     static const uint rcs = ARRAY_MAX / 9;
@@ -224,6 +227,7 @@ void rRock(uint i, f32 dist)
     // unique colour arrays for each rock within visible distance
     if(array_rocks[i].nores == 0 && dist < 333.f)
     {
+        nr++;
         esBind(GL_ARRAY_BUFFER, &mdlRock[0].cid, array_rocks[i].colors, sizeof(rock1_colors), GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].cid);
         glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -234,6 +238,7 @@ void rRock(uint i, f32 dist)
     {
         if(bindstate2 != 1)
         {
+            nsw++;
             glBindBuffer(GL_ARRAY_BUFFER, mdlRock[1].cid);
             glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
             glEnableVertexAttribArray(color_id);
@@ -685,7 +690,7 @@ void rRepel(f32 x, f32 y, f32 z, f32 rx)
     glDrawElements(GL_TRIANGLES, prepel_numind, GL_UNSIGNED_SHORT, 0);
 }
 
-void rShieldElipse(f32 x, f32 y, f32 z, f32 rx)
+void rShieldElipse(f32 x, f32 y, f32 z, f32 rx, f32 opacity)
 {
     bindstate = -1;
 
@@ -698,7 +703,7 @@ void rShieldElipse(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
-    glUniform1f(opacity_id, 0.5f);
+    glUniform1f(opacity_id, opacity);
     glUniform3f(color_id, 0.f, 0.717, 0.8f);
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlShield.vid);
@@ -749,8 +754,8 @@ void rPlayer(f32 x, f32 y, f32 z, f32 rx)
     rSlow(x, y+3.4f, z, rx);
     rRepel(x, y+3.4f, z, rx);
 
-    if(so > 0)
-        rShieldElipse(x, y+1.f, z, rx);
+    if(so > 0.f)
+        rShieldElipse(x, y+1.f, z, rx, 1.f-(so*RECIP_MAX_ROCK_SCALE));
 }
 
 //*************************************
@@ -772,15 +777,15 @@ void newGame()
     pd = (vec){0.f, 0.f, 0.f};
     pld = (vec){0.f, 0.f, 0.f};
 
-    so = 0;
     ct = 0;
+    so = 0.f;
     pr = 0.f;
     lgr = 0.f;
 
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
         array_rocks[i].free = 0;
-        array_rocks[i].scale = esRandFloat(0.1f, 12.f);
+        array_rocks[i].scale = esRandFloat(0.1f, MAX_ROCK_SCALE);
         array_rocks[i].pos.x = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
         array_rocks[i].pos.y = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
         array_rocks[i].pos.z = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
@@ -961,7 +966,9 @@ void main_loop()
 
     // render asteroids
     shadeLambert3(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &opacity_id);
-    so = 0;
+    so = 0.f;
+    nr=0;
+    nsw=0;
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
         if(array_rocks[i].free == 0)
@@ -972,11 +979,13 @@ void main_loop()
 
             const f32 dist = vDist(pp, array_rocks[i].pos);
             if(dist < 10.f + array_rocks[i].scale)
-                so++;
+                if(so == 0.f || dist < so){so = dist;}
 
             rRock(i, dist);
         }
     }
+    printf("S: %u\n", nr);
+    printf("W: %u\n\n", nsw);
 
 //*************************************
 // swap buffers / display render
