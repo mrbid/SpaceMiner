@@ -101,6 +101,7 @@ vec lightpos = {0.f, 0.f, 0.f};
 
 // models
 sint bindstate = -1;
+sint bindstate2 = -1;
 uint keystate[6] = {0};
 ESModel mdlRock[9];
 ESModel mdlFace;
@@ -121,22 +122,26 @@ ESModel mdlPrepel;
 #define FAR_DISTANCE 512.f
 #define THRUST_POWER 0.03f
 #define NECK_ANGLE 0.6f
+#define ROCK_DARKNESS 0.412f
 
-#define ARRAY_MAX 2048 // 2 Megabytes of Asteroids
+#define ARRAY_MAX 2048 // 8 Megabytes of Asteroids
 typedef struct
 {
     // since we have the room
     int free; // fast free checking
+    int nores;// no mineral resources
 
     // rock vars
     f32 scale;
-    f32 colors[240];
     vec pos;
     vec vel;
 
     // +6 bytes
     uint rnd;
     f32 rndf;
+
+    // rock colour array
+    f32 colors[720];
     
     // mineral amounts
     f32 qshield;
@@ -144,7 +149,7 @@ typedef struct
     f32 qslow;
     f32 qrepel;
     f32 qfuel;
-} gi; // 4+960+32+20 = 1020 bytes = 1024 padded (1 kilobyte)
+} gi; // 4+2880+32+20+10 = 2946 bytes = 4096 padded (4 kilobyte)
 gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
@@ -158,8 +163,7 @@ sint freeRock()
 
 // camera vars
 uint focus_cursor = 1;
-vec cp;
-double sens = 0.01f;
+double sens = 0.001f;
 f32 xrot = 0.f;
 f32 yrot = 0.f;
 f32 zoom = -25.f;
@@ -181,18 +185,6 @@ void timestamp(char* ts)
 {
     const time_t tt = time(0);
     strftime(ts, 16, "%H:%M:%S", localtime(&tt));
-}
-
-GLuint qRandSeed(const GLuint seed, const GLuint min, const GLuint max)
-{
-    srand(seed);
-    return esRand(min, max);
-}
-
-GLfloat qRandFloatSeed(const GLuint seed, const GLfloat min, const GLfloat max)
-{
-    srand(seed);
-    return esRandFloat(min, max);
 }
 
 //*************************************
@@ -220,7 +212,6 @@ void rRock(uint i)
 
     mScale(&model, array_rocks[i].scale, array_rocks[i].scale, array_rocks[i].scale);
 
-    
     mMul(&modelview, &model, &view);
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
@@ -229,10 +220,25 @@ void rRock(uint i)
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
 
-    // will have unique colour arrays for each rock
-    glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].cid);
-    glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(color_id);
+    // unique colour arrays for each rock within visible distance
+    if(array_rocks[i].nores == 0 && vDist(pp, array_rocks[i].pos) < 333.f)
+    {
+        esBind(GL_ARRAY_BUFFER, &mdlRock[0].cid, array_rocks[i].colors, sizeof(rock1_colors), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].cid);
+        glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(color_id);
+        bindstate2 = 0;
+    }
+    else
+    {
+        if(bindstate2 != 1)
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, mdlRock[1].cid);
+            glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
+            glEnableVertexAttribArray(color_id);
+            bindstate2 = 1;
+        }
+    }
 
     // this is a super efficient way to render 9 different types of asteroid
     uint nbs = i * rrcs;
@@ -750,37 +756,18 @@ void rPlayer(f32 x, f32 y, f32 z, f32 rx)
 //*************************************
 void newGame()
 {
+    // seed random
+    srand(NEWGAME_SEED);
+    srandf(NEWGAME_SEED);
+
     char strts[16];
     timestamp(&strts[0]);
     printf("[%s] Game Start.\n", strts);
     
     glfwSetWindowTitle(window, "Space Miner");
     
-    cp = (vec){0.f, 0.f, 0.f};
     pp = (vec){0.f, 0.f, 0.f};
     pv = (vec){0.f, 0.f, 0.f};
-
-    //
-
-// typedef struct
-// {
-//     // since we have the room
-//     int free; // fast free checking
-
-//     // rock vars
-//     f32 scale;
-//     f32 colors[240];
-//     vec pos;
-//     vec vel;
-//     char type; // rock 0-9
-    
-//     // mineral amounts
-//     f32 qshield;
-//     f32 qbreak;
-//     f32 qslow;
-//     f32 qrepel;
-//     f32 qfuel;
-// } gi;
 
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
@@ -790,12 +777,86 @@ void newGame()
         array_rocks[i].pos.y = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
         array_rocks[i].pos.z = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
 
-        array_rocks[i].rnd = qRandSeed(i, 0, 1000);
-        array_rocks[i].rndf = qRandFloatSeed(i, 0.05f, 0.3f);
+        array_rocks[i].rnd = esRand(0, 1000);
+        array_rocks[i].rndf = esRandFloat(0.05f, 0.3f);
 
-        // array_rocks[i].pos.x = 0.f;
-        // array_rocks[i].pos.y = 0.f;
-        // array_rocks[i].pos.z = 0.f;
+        if(esRand(0, 1000) < 500)
+        {
+            array_rocks[i].qshield = esRandFloat(0.f, 1.f);
+            array_rocks[i].qbreak = esRandFloat(0.f, 1.f);
+            array_rocks[i].qslow = esRandFloat(0.f, 1.f);
+            array_rocks[i].qrepel = esRandFloat(0.f, 1.f);
+            array_rocks[i].qfuel = esRandFloat(0.f, 1.f);
+        }
+        else
+        {
+            array_rocks[i].qshield = 0.f;
+            array_rocks[i].qbreak = 0.f;
+            array_rocks[i].qslow = 0.f;
+            array_rocks[i].qrepel = 0.f;
+            array_rocks[i].qfuel = 0.f;
+            array_rocks[i].nores = 1;
+        }
+
+        for(uint j = 0; j < 720; j += 3)
+        {
+            uint set = 0;
+            #define CLR_CHANCE 0.01f
+
+            // break
+            if(esRandFloat(0.f, 1.f) < array_rocks[i].qbreak*CLR_CHANCE)
+            {
+                array_rocks[i].colors[j] = 0.644f;
+                array_rocks[i].colors[j+1] = 0.209f;
+                array_rocks[i].colors[j+2] = 0.f;
+                set = 1;
+            }
+
+            // shield
+            if(set == 0 && esRandFloat(0.f, 1.f) < array_rocks[i].qshield*CLR_CHANCE)
+            {
+                array_rocks[i].colors[j] = 0.f;
+                array_rocks[i].colors[j+1] = 0.8f;
+                array_rocks[i].colors[j+2] = 0.28f;
+                set = 1;
+            }
+
+            // slow
+            if(set == 0 && esRandFloat(0.f, 1.f) < array_rocks[i].qslow*CLR_CHANCE)
+            {
+                array_rocks[i].colors[j] = 0.429f;
+                array_rocks[i].colors[j+1] = 0.f;
+                array_rocks[i].colors[j+2] = 0.8f;
+                set = 1;
+            }
+
+            // repel
+            if(set == 0 && esRandFloat(0.f, 1.f) < array_rocks[i].qrepel*CLR_CHANCE)
+            {
+                array_rocks[i].colors[j] = 0.095f;
+                array_rocks[i].colors[j+1] = 0.069f;
+                array_rocks[i].colors[j+2] = 0.041f;
+                set = 1;
+            }
+
+            // fuel
+            if(set == 0 && esRandFloat(0.f, 1.f) < array_rocks[i].qfuel*CLR_CHANCE)
+            {
+                array_rocks[i].colors[j] = 0.062f;
+                array_rocks[i].colors[j+1] = 1.f;
+                array_rocks[i].colors[j+2] = 0.873f;
+                set = 1;
+            }
+
+            // else
+            if(set == 0)
+            {
+                array_rocks[i].colors[j] = ROCK_DARKNESS;
+                array_rocks[i].colors[j+1] = ROCK_DARKNESS;
+                array_rocks[i].colors[j+2] = ROCK_DARKNESS;
+            }
+        }
+
         vRuv(&array_rocks[i].vel);
     }
 }
@@ -996,6 +1057,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
         zoom -= 1.0f;
     else if(yoffset == 1)
         zoom += 1.0f;
+    
+    if(zoom > -15.f){zoom = -15.f;}
 }
 
 // void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -1083,9 +1146,6 @@ int main(int argc, char** argv)
 
     // hide cursor
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-    // seed random
-    srand(NEWGAME_SEED);
 
 //*************************************
 // projection
