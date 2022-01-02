@@ -119,15 +119,16 @@ ESModel mdlPrepel;
 
 // game vars
 #define NEWGAME_SEED 1337
-#define FAR_DISTANCE 512.f
 #define THRUST_POWER 0.03f
 #define NECK_ANGLE 0.6f
 #define ROCK_DARKNESS 0.412f
 #define MAX_ROCK_SCALE 12.f
-#define FUEL_DRAIN_RATE 0.01f
 const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
+#define FUEL_DRAIN_RATE 0.01f
+#define SHIELD_DRAIN_RATE 0.06f
 
-#define ARRAY_MAX 2048 // 8 Megabytes of Asteroids
+#define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
+const f32 FAR_DISTANCE = (float)ARRAY_MAX / 4.f;
 typedef struct
 {
     // since we have the room
@@ -152,7 +153,8 @@ typedef struct
     f32 qslow;
     f32 qrepel;
     f32 qfuel;
-} gi; // 4+2880+32+20+10 = 2946 bytes = 4096 padded (4 kilobyte)
+
+} gi; // 4+2880+32+20+10 = 2946 bytes = 4096 padded (4 kilobyte) [calced with shorts not ints, either way, plenty of room before breaking into the next cache padding]
 gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
@@ -178,9 +180,13 @@ f32 pr; // rotation
 vec pp; // position
 vec pv; // velocity
 vec pd; // thust direction
-f32 lgr = 0.f;
+f32 lgr = 0.f; // last good head rotation
 vec pld;// look direction
 f32 pf; // fuel
+f32 pb; // break
+f32 ps; // shield
+f32 psl;// slow
+f32 pre;// repel
 
 
 //*************************************
@@ -431,7 +437,8 @@ void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 1.f, 0.f, 0.f);
+    //glUniform3f(color_id, 1.f, 0.f, 0.f);
+    glUniform3f(color_id, 0.062f, 1.f, 0.873f);
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlLeftFlame.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -465,7 +472,8 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 1.f, 0.f, 0.f);
+    //glUniform3f(color_id, 1.f, 0.f, 0.f);
+    glUniform3f(color_id, 0.062f, 1.f, 0.873f);
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlRightFlame.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -553,7 +561,7 @@ void rBreak(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 0.644f, 0.209f, 0.f);
+    glUniform3f(color_id, fone(0.644f+(1.f-pb)), fone(0.209f+(1.f-pb)), fone(0.f+(1.f-pb)));
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlPbreak.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -597,7 +605,7 @@ void rShield(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 0.f, 0.8f, 0.28f);
+    glUniform3f(color_id, fone(0.f+(1.f-ps)), fone(0.8f+(1.f-ps)), fone(0.28f+(1.f-ps)));
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlPshield.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -641,7 +649,7 @@ void rSlow(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 0.429f, 0.f, 0.8f);
+    glUniform3f(color_id, fone(0.429f+(1.f-psl)), fone(0.f+(1.f-psl)), fone(0.8f+(1.f-psl)));
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlPslow.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -685,7 +693,7 @@ void rRepel(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 0.095f, 0.069f, 0.041f);
+    glUniform3f(color_id, fone(0.095f+(1.f-pre)), fone(0.069f+(1.f-pre)), fone(0.041f+(1.f-pre)));
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlPrepel.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -764,8 +772,14 @@ void rPlayer(f32 x, f32 y, f32 z, f32 rx)
     rSlow(x, y+3.4f, z, rx);
     rRepel(x, y+3.4f, z, rx);
 
-    if(so > 0.f)
-        rShieldElipse(x, y+1.f, z, rx, 1.f-(so*RECIP_MAX_ROCK_SCALE));
+    if(so > 0.f && ps > 0.f)
+    {
+        const f32 ss = 1.f-(so*RECIP_MAX_ROCK_SCALE);
+        ps -= SHIELD_DRAIN_RATE * ss * dt;
+        ps = fzero(ps);
+        rShieldElipse(x, y+1.f, z, rx, ss);
+        //printf("s: %g\n", ps);
+    }
 }
 
 //*************************************
@@ -791,7 +805,12 @@ void newGame()
     so = 0.f;
     pr = 0.f;
     lgr = 0.f;
+
     pf = 1.f;
+    pb = 1.f;
+    ps = 1.f;
+    psl = 0.f;
+    pre = 0.f;
 
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
@@ -945,6 +964,16 @@ void main_loop()
         pv.y += THRUST_POWER * dt;
         pf -= FUEL_DRAIN_RATE * dt;
         pf = fzero(pf);
+    }
+
+    static uint lf = 0;
+    const uint nf = pf*100.f;
+    if(nf != lf)
+    {
+        char title[256];
+        sprintf(title, "Space Miner - Fuel %u", nf);
+        glfwSetWindowTitle(window, title);
+        lf = nf;
     }
 
     // increment player direction
