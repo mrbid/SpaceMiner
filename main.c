@@ -124,6 +124,7 @@ ESModel mdlPrepel;
 #define NECK_ANGLE 0.6f
 #define ROCK_DARKNESS 0.412f
 #define MAX_ROCK_SCALE 12.f
+#define FUEL_DRAIN_RATE 0.01f
 const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
 
 #define ARRAY_MAX 2048 // 8 Megabytes of Asteroids
@@ -171,7 +172,7 @@ f32 yrot = 0.f;
 f32 zoom = -25.f;
 
 // player vars
-f32 so;// shield on (closest distance)
+f32 so; // shield on (closest distance)
 uint ct;// thrust signal
 f32 pr; // rotation
 vec pp; // position
@@ -179,6 +180,7 @@ vec pv; // velocity
 vec pd; // thust direction
 f32 lgr = 0.f;
 vec pld;// look direction
+f32 pf; // fuel
 
 
 //*************************************
@@ -190,11 +192,21 @@ void timestamp(char* ts)
     strftime(ts, 16, "%H:%M:%S", localtime(&tt));
 }
 
+static inline f32 fzero(f32 f)
+{
+    if(f < 0.f){f = 0.f;}
+    return f;
+}
+
+static inline f32 fone(f32 f)
+{
+    if(f > 1.f){f = 1.f;}
+    return f;
+}
+
 //*************************************
 // render functions
 //*************************************
-uint nr=0;
-uint nsw=0;
 void rRock(uint i, f32 dist)
 {
     static const uint rcs = ARRAY_MAX / 9;
@@ -227,7 +239,6 @@ void rRock(uint i, f32 dist)
     // unique colour arrays for each rock within visible distance
     if(array_rocks[i].nores == 0 && dist < 333.f)
     {
-        nr++;
         glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].cid);
         glBufferData(GL_ARRAY_BUFFER, sizeof(rock1_colors), array_rocks[i].colors, GL_STATIC_DRAW);
         glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -238,7 +249,6 @@ void rRock(uint i, f32 dist)
     {
         if(bindstate2 != 1)
         {
-            nsw++;
             glBindBuffer(GL_ARRAY_BUFFER, mdlRock[1].cid);
             glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
             glEnableVertexAttribArray(color_id);
@@ -353,7 +363,7 @@ void rFuel(f32 x, f32 y, f32 z, f32 rx)
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 0.062f, 1.f, 0.873f);
+    glUniform3f(color_id, fone(0.062f+(1.f-pf)), fone(1.f+(1.f-pf)), fone(0.873f+(1.f-pf)));
 
     glBindBuffer(GL_ARRAY_BUFFER, mdlFuel.vid);
     glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -781,6 +791,7 @@ void newGame()
     so = 0.f;
     pr = 0.f;
     lgr = 0.f;
+    pf = 1.f;
 
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
@@ -889,29 +900,52 @@ void main_loop()
 //*************************************
 // keystates
 //*************************************
+    if(pf == 0.f) // disable thrust control on fuel empty
+        memset(&keystate[0], 0x00, sizeof(uint)*6);
+
     if(keystate[0] == 1)
     {
         pr += 3.f * dt;
         lgr = pr;
+        pf -= FUEL_DRAIN_RATE * dt;
+        pf = fzero(pf);
     }
 
     if(keystate[1] == 1)
     {
         pr -= 3.f * dt;
         lgr = pr;
+        pf -= FUEL_DRAIN_RATE * dt;
+        pf = fzero(pf);
     }
     
     if(keystate[2] == 1)
+    {
         ct = 1;
+        pf -= FUEL_DRAIN_RATE * dt;
+        pf = fzero(pf);
+    }
 
     if(keystate[3] == 1)
+    {
         ct = 2;
+        pf -= FUEL_DRAIN_RATE * dt;
+        pf = fzero(pf);
+    }
 
     if(keystate[4] == 1)
+    {
         pv.y -= THRUST_POWER * dt;
+        pf -= FUEL_DRAIN_RATE * dt;
+        pf = fzero(pf);
+    }
 
     if(keystate[5] == 1)
+    {
         pv.y += THRUST_POWER * dt;
+        pf -= FUEL_DRAIN_RATE * dt;
+        pf = fzero(pf);
+    }
 
     // increment player direction
     if(ct > 0)
@@ -967,8 +1001,6 @@ void main_loop()
     // render asteroids
     shadeLambert3(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &opacity_id);
     so = 0.f;
-    nr=0;
-    nsw=0;
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
         if(array_rocks[i].free == 0)
@@ -984,8 +1016,6 @@ void main_loop()
             rRock(i, dist);
         }
     }
-    printf("S: %u\n", nr);
-    printf("W: %u\n\n", nsw);
 
 //*************************************
 // swap buffers / display render
