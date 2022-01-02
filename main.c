@@ -228,8 +228,8 @@ void rRock(uint i, f32 dist)
     if(array_rocks[i].nores == 0 && dist < 333.f)
     {
         nr++;
-        esBind(GL_ARRAY_BUFFER, &mdlRock[0].cid, array_rocks[i].colors, sizeof(rock1_colors), GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].cid);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(rock1_colors), array_rocks[i].colors, GL_STATIC_DRAW);
         glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(color_id);
         bindstate2 = 0;
