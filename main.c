@@ -16,6 +16,11 @@
         Shift = Thrust Down
         Space = Thrust Up
 
+    
+    Mouse:
+
+        Scroll - Zoom in/out
+
 
     Plan:
 
@@ -128,7 +133,7 @@ const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
 #define SHIELD_DRAIN_RATE 0.06f
 
 #define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
-const f32 FAR_DISTANCE = (float)ARRAY_MAX / 4.f;
+const f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
 typedef struct
 {
     // since we have the room
@@ -206,6 +211,13 @@ static inline f32 fzero(f32 f)
 
 static inline f32 fone(f32 f)
 {
+    if(f > 1.f){f = 1.f;}
+    return f;
+}
+
+static inline f32 fsat(f32 f)
+{
+    if(f < 0.f){f = 0.f;}
     if(f > 1.f){f = 1.f;}
     return f;
 }
@@ -771,12 +783,21 @@ void rPlayer(f32 x, f32 y, f32 z, f32 rx)
     rSlow(x, y+3.4f, z, rx);
     rRepel(x, y+3.4f, z, rx);
 
-    if(so > 0.f && ps > 0.f)
+    if(so > 0.f)
     {
         const f32 ss = 1.f-(so*RECIP_MAX_ROCK_SCALE);
-        ps -= SHIELD_DRAIN_RATE * ss * dt;
-        ps = fzero(ps);
-        rShieldElipse(x, y+1.f, z, rx, ss);
+        if(ps == 0.f)
+        {
+            pf -= FUEL_DRAIN_RATE * ss * dt;
+            pf = fzero(pf);
+        }
+        else
+        {
+            ps -= SHIELD_DRAIN_RATE * ss * dt;
+            ps = fzero(ps);
+
+            rShieldElipse(x, y+1.f, z, rx, fsat(ss));
+        }
         //printf("s: %g\n", ps);
     }
 }
@@ -1193,12 +1214,15 @@ int main(int argc, char** argv)
     printf("Space Miner\n");
     printf("James William Fletcher (james@voxdsp.com)\n\n");
     printf("Keyboard Input\n");
+    printf("Q = Break Asteroid\n");
     printf("W = Thrust Forward\n");
     printf("A = Turn Left\n");
     printf("S = Thrust Backward\n");
     printf("D = Turn Right\n");
     printf("Shift = Thrust Down\n");
     printf("Space = Thrust Up\n");
+    printf("\nMouse Input\n");
+    printf("Scroll = Zoom in/out\n");
     printf(".....\n\n");
 
     // init glfw
