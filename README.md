@@ -6,7 +6,7 @@ You just float around and collect space rocks.
 ## Keyboard
  - `Q` = Break Asteroid
  - `E` = Stop all near by Asteroids
- - `R` = Repel near by Asteroids
+ - `R` = Repel near by Asteroid
  - `W` = Thrust Forward
  - `A` = Turn Left
  - `S` = Thrust Backward
