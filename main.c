@@ -9,6 +9,9 @@
 
     Keyboard:
 
+        Q = Break Asteroid
+        E = Stop all near by Asteroids
+        R = Repel all near by Asteroids
         W = Thrust Forward
         A = Turn Left
         S = Thrust Backward
@@ -19,10 +22,9 @@
     
     Mouse:
 
-        Scroll - Zoom in/out
-
-
-    Plan:
+        Left Click = Break Asteroid
+        Right Click = Repel Asteroid
+        Scroll = Zoom in/out
 
 */
 
@@ -131,6 +133,7 @@ ESModel mdlPrepel;
 const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
 #define FUEL_DRAIN_RATE 0.01f
 #define SHIELD_DRAIN_RATE 0.06f
+#define REFINARY_YEILD 0.13f
 
 #define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
 const f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
@@ -187,6 +190,7 @@ vec pv; // velocity
 vec pd; // thust direction
 f32 lgr = 0.f; // last good head rotation
 vec pld;// look direction
+vec pfd;// face direction
 f32 pf; // fuel
 f32 pb; // break
 f32 ps; // shield
@@ -507,10 +511,9 @@ void rFace(f32 x, f32 y, f32 z, f32 rx)
     mTranslate(&model, x, y, z);
     mRotX(&model, -xrot);
 
-    vec dir;
-    mGetDirZ(&dir, model);
-    vInv(&dir);
-    const f32 dot = vDot(dir, pld);
+    mGetDirZ(&pfd, model);
+    vInv(&pfd);
+    const f32 dot = vDot(pfd, pld);
     if(dot < NECK_ANGLE)
     {
         mIdent(&model);
@@ -805,14 +808,13 @@ void rPlayer(f32 x, f32 y, f32 z, f32 rx)
 //*************************************
 // game functions
 //*************************************
-void newGame()
+void newGame(unsigned int seed)
 {
-    srand(NEWGAME_SEED);
-    srandf(NEWGAME_SEED);
+    srand(seed);
 
     char strts[16];
     timestamp(&strts[0]);
-    printf("[%s] Game Start.\n", strts);
+    printf("[%s] Game Start [%u].\n", strts, seed);
     
     glfwSetWindowTitle(window, "Space Miner");
     
@@ -1087,34 +1089,79 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         else if(key == GLFW_KEY_LEFT_SHIFT){ keystate[4] = 1; }
         else if(key == GLFW_KEY_SPACE){ keystate[5] = 1; }
 
-        // // fire bullet
-        // else if(key == GLFW_KEY_SPACE)
-        // {
-        //     for(uint i = 0; i < ARRAY_MAX; i++)
-        //     {
-        //         if(array_bullet[i].z == 0.f)
-        //         {
-        //             array_bullet[i].x = pp.x;
-        //             array_bullet[i].y = pp.y;
-        //             array_bullet[i].z = -8.f;
-        //             break;
-        //         }
-        //     }
-        // }
+        // new game
+        else if(key == GLFW_KEY_N)
+            newGame(time(0));
 
-        // // random seed
-        // else if(key == GLFW_KEY_R)
-        // {
-        //     const unsigned int nr = time(0);
-        //     srand(t*100);
-        //     srandf(t*100);
-        //     char strts[16];
-        //     timestamp(&strts[0]);
-        //     printf("[%s] New Random Seed: %u\n", strts, nr);
 
-        //     for(uint i = 0; i < ARRAY_MAX; i++)
-        //         rndCube(i, esRandFloat(-64.f, -FAR_DISTANCE));
-        // }
+        // break all rocks
+        else if(key == GLFW_KEY_Q && pb > 0.f)
+        {
+            for(uint i = 0; i < ARRAY_MAX; i++)
+            {
+                if(array_rocks[i].free == 0)
+                {
+                    const f32 dist = vDist(pp, array_rocks[i].pos);
+                    if(dist < 30.f + array_rocks[i].scale)
+                    {
+                        pb -= 0.06f;
+                        pb = fzero(pb);
+
+                        pf += array_rocks[i].qfuel * REFINARY_YEILD * 3.f;
+                        pb += array_rocks[i].qbreak * REFINARY_YEILD;
+                        ps += array_rocks[i].qshield * REFINARY_YEILD;
+                        psl += array_rocks[i].qslow * REFINARY_YEILD;
+                        pre += array_rocks[i].qrepel * REFINARY_YEILD;
+
+                        pf = fone(pf);
+                        pb = fone(pb);
+                        ps = fone(ps);
+                        psl = fone(psl);
+                        pre = fone(pre);
+
+                        array_rocks[i].free = 1;
+                    }
+                }
+            }
+        }
+
+        // stop all rocks
+        else if(key == GLFW_KEY_E && psl > 0.f)
+        {
+            for(uint i = 0; i < ARRAY_MAX; i++)
+            {
+                if(array_rocks[i].free == 0)
+                {
+                    const f32 dist = vDist(pp, array_rocks[i].pos);
+                    if(dist < 333.f + array_rocks[i].scale)
+                    {
+                        psl -= 0.06f;
+                        psl = fzero(psl);
+                        array_rocks[i].vel = (vec){0.f, 0.f, 0.f};
+                    }
+                }
+            }
+        }
+
+        // repel rock
+        else if(key == GLFW_KEY_R && pre > 0.f)
+        {
+            for(uint i = 0; i < ARRAY_MAX; i++)
+            {
+                if(array_rocks[i].free == 0)
+                {
+                    const f32 dist = vDist(pp, array_rocks[i].pos);
+                    if(dist < 30.f + array_rocks[i].scale)
+                    {
+                        //vRuv(&array_rocks[i].vel);
+                        pre -= 0.06f;
+                        pre = fzero(pre);
+                        array_rocks[i].vel = pfd;
+                        vMulS(&array_rocks[i].vel, array_rocks[i].vel, 42.f);
+                    }
+                }
+            }
+        }
 
         // toggle mouse focus
         if(key == GLFW_KEY_ESCAPE)
@@ -1163,25 +1210,60 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     if(zoom > -15.f){zoom = -15.f;}
 }
 
-// void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-// {
-//     if(button == GLFW_MOUSE_BUTTON_LEFT)
-//     {
-//         if(action == GLFW_PRESS)
-//         {
-//             for(uint i = 0; i < ARRAY_MAX; i++)
-//             {
-//                 if(array_bullet[i].z == 0.f)
-//                 {
-//                     array_bullet[i].x = x;
-//                     array_bullet[i].y = y;
-//                     array_bullet[i].z = -8.f;
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-// }
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if(action == GLFW_PRESS)
+    {
+        if(button == GLFW_MOUSE_BUTTON_LEFT)
+        {
+            for(uint i = 0; i < ARRAY_MAX; i++)
+            {
+                if(array_rocks[i].free == 0)
+                {
+                    const f32 dist = vDist(pp, array_rocks[i].pos);
+                    if(dist < 30.f + array_rocks[i].scale)
+                    {
+                        pb -= 0.06f;
+                        pb = fzero(pb);
+
+                        pf += array_rocks[i].qfuel * REFINARY_YEILD * 3.f;
+                        pb += array_rocks[i].qbreak * REFINARY_YEILD;
+                        ps += array_rocks[i].qshield * REFINARY_YEILD;
+                        psl += array_rocks[i].qslow * REFINARY_YEILD;
+                        pre += array_rocks[i].qrepel * REFINARY_YEILD;
+
+                        pf = fone(pf);
+                        pb = fone(pb);
+                        ps = fone(ps);
+                        psl = fone(psl);
+                        pre = fone(pre);
+
+                        array_rocks[i].free = 1;
+                    }
+                }
+            }
+        }
+
+        if(button == GLFW_MOUSE_BUTTON_RIGHT)
+        {
+            for(uint i = 0; i < ARRAY_MAX; i++)
+            {
+                if(array_rocks[i].free == 0)
+                {
+                    const f32 dist = vDist(pp, array_rocks[i].pos);
+                    if(dist < 30.f + array_rocks[i].scale)
+                    {
+                        //vRuv(&array_rocks[i].vel);
+                        pre -= 0.06f;
+                        pre = fzero(pre);
+                        array_rocks[i].vel = pfd;
+                        vMulS(&array_rocks[i].vel, array_rocks[i].vel, 42.f);
+                    }
+                }
+            }
+        }
+    }
+}
 
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -1213,17 +1295,22 @@ int main(int argc, char** argv)
     // help
     printf("Space Miner\n");
     printf("James William Fletcher (james@voxdsp.com)\n\n");
-    printf("Keyboard Input\n");
+    printf("Keyboard Input:\n");
+    printf("N = New Game\n");
     printf("Q = Break Asteroid\n");
+    printf("E = Stop all near by Asteroids\n");
+    printf("R = Repel all near by Asteroids\n");
     printf("W = Thrust Forward\n");
     printf("A = Turn Left\n");
     printf("S = Thrust Backward\n");
     printf("D = Turn Right\n");
     printf("Shift = Thrust Down\n");
     printf("Space = Thrust Up\n");
-    printf("\nMouse Input\n");
+    printf("\nMouse Input:\n");
+    printf("Left Click = Break Asteroid\n");
+    printf("Right Click = Repel Asteroid\n");
     printf("Scroll = Zoom in/out\n");
-    printf(".....\n\n");
+    printf("\n.....\n\n");
 
     // init glfw
     if(!glfwInit()){exit(EXIT_FAILURE);}
@@ -1240,7 +1327,7 @@ int main(int argc, char** argv)
     glfwSetWindowPos(window, (desktop->width/2)-(winw/2), (desktop->height/2)-(winh/2)); // center window on desktop
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetKeyCallback(window, key_callback);
-    //glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
@@ -1402,7 +1489,7 @@ int main(int argc, char** argv)
 //*************************************
 
     // init
-    newGame();
+    newGame(NEWGAME_SEED);
 
     // reset
     t = glfwGetTime();
@@ -1417,10 +1504,10 @@ int main(int argc, char** argv)
         fc++;
     }
 
-    // final score
-    // char strts[16];
-    // timestamp(&strts[0]);
-    // printf("[%s] SCORE %i - HIT %u - LOSS %u\n\n", strts, score, hit, loss);
+    // end
+    char strts[16];
+    timestamp(&strts[0]);
+    printf("[%s] Game End.\n\n", strts);
 
     // done
     glfwDestroyWindow(window);
