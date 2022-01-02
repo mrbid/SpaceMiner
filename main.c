@@ -100,7 +100,7 @@ mat viewrot;
 vec lightpos = {0.f, 0.f, 0.f};
 
 // models
-uint bindstate = 0;
+sint bindstate = -1;
 uint keystate[6] = {0};
 ESModel mdlRock[9];
 ESModel mdlFace;
@@ -133,7 +133,10 @@ typedef struct
     f32 colors[240];
     vec pos;
     vec vel;
-    char type; // rock 0-9
+
+    // +6 bytes
+    uint rnd;
+    f32 rndf;
     
     // mineral amounts
     f32 qshield;
@@ -141,7 +144,7 @@ typedef struct
     f32 qslow;
     f32 qrepel;
     f32 qfuel;
-} gi; // 4+960+32+1+20 = 1021 bytes = 1024 padded (1 kilobyte)
+} gi; // 4+960+32+20 = 1020 bytes = 1024 padded (1 kilobyte)
 gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
@@ -180,16 +183,43 @@ void timestamp(char* ts)
     strftime(ts, 16, "%H:%M:%S", localtime(&tt));
 }
 
+GLuint qRandSeed(const GLuint seed, const GLuint min, const GLuint max)
+{
+    srand(seed);
+    return esRand(min, max);
+}
+
+GLfloat qRandFloatSeed(const GLuint seed, const GLfloat min, const GLfloat max)
+{
+    srand(seed);
+    return esRandFloat(min, max);
+}
+
 //*************************************
 // render functions
 //*************************************
 
-void rRock(f32 x, f32 y, f32 z)
+void rRock(uint i)
 {
-    bindstate = 0;
+    static const uint rcs = ARRAY_MAX / 9;
+    static const f32 rrcs = 1.f / (f32)rcs;
 
     mIdent(&model);
-    mTranslate(&model, x, y, z);
+    mTranslate(&model, array_rocks[i].pos.x, array_rocks[i].pos.y, array_rocks[i].pos.z);
+
+    if(array_rocks[i].rnd < 500)
+    {
+        f32 mag = vMag(array_rocks[i].vel)*array_rocks[i].rndf*t;
+        if(array_rocks[i].rnd < 100)
+            mRotY(&model, mag);
+        if(array_rocks[i].rnd < 200)
+            mRotZ(&model, mag);
+        if(array_rocks[i].rnd < 300)
+            mRotX(&model, mag);
+    }
+
+    mScale(&model, array_rocks[i].scale, array_rocks[i].scale, array_rocks[i].scale);
+
     
     mMul(&modelview, &model, &view);
 
@@ -199,26 +229,35 @@ void rRock(f32 x, f32 y, f32 z)
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].vid);
-    glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(position_id);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].nid);
-    glVertexAttribPointer(normal_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(normal_id);
-
+    // will have unique colour arrays for each rock
     glBindBuffer(GL_ARRAY_BUFFER, mdlRock[0].cid);
     glVertexAttribPointer(color_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(color_id);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdlRock[0].iid);
+    // this is a super efficient way to render 9 different types of asteroid
+    uint nbs = i * rrcs;
+    if(nbs > 8){nbs = 8;}
+    if(bindstate == -1){bindstate = 1;} // lol trust me, it's good.
+    if(nbs != bindstate)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[bindstate].vid);
+        glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(position_id);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[bindstate].nid);
+        glVertexAttribPointer(normal_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        glEnableVertexAttribArray(normal_id);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdlRock[bindstate].iid);
+        bindstate = nbs;
+    }
 
     glDrawElements(GL_TRIANGLES, rock1_numind, GL_UNSIGNED_SHORT, 0);
 }
 
 void rLegs(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -251,7 +290,7 @@ void rLegs(f32 x, f32 y, f32 z, f32 rx)
 
 void rBody(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -290,7 +329,7 @@ void rBody(f32 x, f32 y, f32 z, f32 rx)
 
 void rFuel(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -319,7 +358,7 @@ void rFuel(f32 x, f32 y, f32 z, f32 rx)
 
 void rArms(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -353,7 +392,7 @@ void rArms(f32 x, f32 y, f32 z, f32 rx)
 
 void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -387,7 +426,7 @@ void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
 
 void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -421,7 +460,7 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
 
 void rFace(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -465,7 +504,7 @@ void rFace(f32 x, f32 y, f32 z, f32 rx)
 
 void rBreak(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -509,7 +548,7 @@ void rBreak(f32 x, f32 y, f32 z, f32 rx)
 
 void rShield(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -553,7 +592,7 @@ void rShield(f32 x, f32 y, f32 z, f32 rx)
 
 void rSlow(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -597,7 +636,7 @@ void rSlow(f32 x, f32 y, f32 z, f32 rx)
 
 void rRepel(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -641,7 +680,7 @@ void rRepel(f32 x, f32 y, f32 z, f32 rx)
 
 void rShieldElipse(f32 x, f32 y, f32 z, f32 rx)
 {
-    bindstate = 0;
+    bindstate = -1;
 
     mIdent(&model);
     mTranslate(&model, x, y, z);
@@ -746,10 +785,14 @@ void newGame()
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
         array_rocks[i].free = 0;
-        array_rocks[i].scale = 1.f;
+        array_rocks[i].scale = esRandFloat(0.1f, 12.f);
         array_rocks[i].pos.x = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
         array_rocks[i].pos.y = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
         array_rocks[i].pos.z = esRandFloat(-FAR_DISTANCE, FAR_DISTANCE);
+
+        array_rocks[i].rnd = qRandSeed(i, 0, 1000);
+        array_rocks[i].rndf = qRandFloatSeed(i, 0.05f, 0.3f);
+
         // array_rocks[i].pos.x = 0.f;
         // array_rocks[i].pos.y = 0.f;
         // array_rocks[i].pos.z = 0.f;
@@ -856,7 +899,7 @@ void main_loop()
             vec inc;
             vMulS(&inc, array_rocks[i].vel, dt);
             vAdd(&array_rocks[i].pos, array_rocks[i].pos, inc);
-            rRock(array_rocks[i].pos.x, array_rocks[i].pos.y, array_rocks[i].pos.z);
+            rRock(i);
         }
     }
 
@@ -994,7 +1037,7 @@ void window_size_callback(GLFWwindow* window, int width, int height)
     uh2 = 1 / wh2;
 
     mIdent(&projection);
-    mPerspective(&projection, 60.0f, aspect, 1.0f, FAR_DISTANCE); 
+    mPerspective(&projection, 60.0f, aspect, 1.0f, FAR_DISTANCE*2.f); 
 }
 
 //*************************************
@@ -1005,6 +1048,13 @@ int main(int argc, char** argv)
     // help
     printf("Space Miner\n");
     printf("James William Fletcher (james@voxdsp.com)\n\n");
+    printf("Keyboard Input\n");
+    printf("W = Thrust Forward\n");
+    printf("A = Turn Left\n");
+    printf("S = Thrust Backward\n");
+    printf("D = Turn Right\n");
+    printf("Shift = Thrust Down\n");
+    printf("Space = Thrust Up\n");
     printf(".....\n\n");
 
     // init glfw
