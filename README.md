@@ -35,7 +35,7 @@ https://github.com/mrbid/spaceminer/raw/main/spaceminer_arm
 
 ### Windows Binary
 https://github.com/mrbid/spaceminer/raw/main/spaceminer.exe<br>
-https://github.com/mrbid/spaceminer/raw/main/glfw.dll
+https://github.com/mrbid/spaceminer/raw/main/glfw3.dll
 
 ## Attributions
 http://www.forrestwalter.com/icons/<br>
