@@ -845,6 +845,8 @@ void newGame(unsigned int seed)
     pd = (vec){0.f, 0.f, 0.f};
     pld = (vec){0.f, 0.f, 0.f};
 
+    st = 0;
+
     ct = 0;
     pm = 0;
     so = 0.f;
