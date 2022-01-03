@@ -170,7 +170,7 @@ typedef struct
     f32 qrepel;
     f32 qfuel;
 
-} gi; // 4+2880+32+20+10 = 2946 bytes = 4096 padded (4 kilobyte) [calced with shorts not ints, either way, plenty of room before breaking into the next cache padding]
+} gi; // 4+4+4+16+16+2+4+2880+4+4+4+4+4 = 2950 bytes = 4096 padded (4 kilobyte)
 gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
