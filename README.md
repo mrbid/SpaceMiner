@@ -10,8 +10,8 @@ You just float around and collect space rocks.
  - `P` = Player stats to console
  - `N` = New Game
  - `Q` = Break Asteroid
- - `E` = Stop all near by Asteroids
- - `R` = Repel near by Asteroid
+ - `E` = Stop all nearby Asteroids
+ - `R` = Repel nearby Asteroid
  - `W` = Thrust Forward
  - `A` = Turn Left
  - `S` = Thrust Backward
