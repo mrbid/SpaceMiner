@@ -200,6 +200,7 @@ f32 pb; // break
 f32 ps; // shield
 f32 psl;// slow
 f32 pre;// repel
+uint pm;// mined asteroid count
 
 
 //*************************************
@@ -828,6 +829,7 @@ void newGame(unsigned int seed)
     pld = (vec){0.f, 0.f, 0.f};
 
     ct = 0;
+    pm = 0;
     so = 0.f;
     pr = 0.f;
     lgr = 0.f;
@@ -997,8 +999,11 @@ void main_loop()
     if(nf != lf)
     {
         char title[256];
-        sprintf(title, "Space Miner - Fuel %u", nf);
+        sprintf(title, "Space Miner - Fuel %u - Mined %u", nf, pm);
         glfwSetWindowTitle(window, title);
+        char strts[16];
+        timestamp(&strts[0]);
+        printf("[%s] Fuel: %.2f\n", strts, pf);
         lf = nf;
     }
 
@@ -1131,10 +1136,16 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
                         pre = fone(pre);
 
                         array_rocks[i].free = 1;
+                        pm++;
+
+                        char title[256];
+                        sprintf(title, "Space Miner - Fuel %u - Mined %u", (uint)(pf*100.f), pm);
+                        glfwSetWindowTitle(window, title);
 
                         char strts[16];
                         timestamp(&strts[0]);
-                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+                        printf("[%s] Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pb, ps, psl, pre);
+                        printf("[%s] Mined: %u\n", strts, pm);
                     }
                 }
             }
@@ -1271,10 +1282,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                         pre = fone(pre);
 
                         array_rocks[i].free = 1;
+                        pm++;
+
+                        char title[256];
+                        sprintf(title, "Space Miner - Fuel %u - Mined %u", (uint)(pf*100.f), pm);
+                        glfwSetWindowTitle(window, title);
 
                         char strts[16];
                         timestamp(&strts[0]);
-                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+                        printf("[%s] Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pb, ps, psl, pre);
+                        printf("[%s] Mined: %u\n", strts, pm);
                     }
                 }
             }
@@ -1581,6 +1598,7 @@ int main(int argc, char** argv)
     char strts[16];
     timestamp(&strts[0]);
     printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+    printf("[%s] Mined: %u\n", strts, pm);
     printf("[%s] Game End.\n\n", strts);
 
     // done
