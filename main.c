@@ -170,7 +170,7 @@ typedef struct
 gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
-sint freeRock()
+sint freeRock() // unused i know, the original idea was to dynamically pop out ores when rocks are mined which then you need to manually float to and collect but, I went off the idea.
 {
     for(sint i = 0; i < ARRAY_MAX; i++)
         if(array_rocks[i].free == 1)
