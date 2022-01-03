@@ -10,7 +10,7 @@
     Keyboard:
 
         F = FPS to console
-        P = Player Stats
+        P = Player dtats to console
         N = New Game
         Q = Break Asteroid
         E = Stop all near by Asteroids
@@ -1307,7 +1307,7 @@ int main(int argc, char** argv)
     printf("James William Fletcher (james@voxdsp.com)\n\n");
     printf("Keyboard Input:\n");
     printf("F = FPS to console\n");
-    printf("P = Player Stats\n");
+    printf("P = Player stats to console\n");
     printf("N = New Game\n");
     printf("Q = Break Asteroid\n");
     printf("E = Stop all near by Asteroids\n");
@@ -1519,6 +1519,7 @@ int main(int argc, char** argv)
     // end
     char strts[16];
     timestamp(&strts[0]);
+    printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
     printf("[%s] Game End.\n\n", strts);
 
     // done
