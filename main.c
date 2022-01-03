@@ -141,10 +141,11 @@ const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
 
 #ifdef __arm__
     #define ARRAY_MAX 2048 // 8 Megabytes of Asteroids
+    const f32 FAR_DISTANCE = (float)ARRAY_MAX / 4.f;
 #else
     #define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
+    const f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
 #endif
-const f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
 typedef struct
 {
     // since we have the room
