@@ -6,8 +6,8 @@ A 3D space mining game.
 You just float around and collect space rocks.
 
 ## Keyboard
- - `F` = FPS to Console
- - `P` = Player Stats
+ - `F` = FPS to console
+ - `P` = Player stats to console
  - `N` = New Game
  - `Q` = Break Asteroid
  - `E` = Stop all near by Asteroids
