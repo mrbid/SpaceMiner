@@ -844,7 +844,7 @@ void newGame(unsigned int seed)
 #ifndef __arm__
     const f32 scalar = esRandFloat(8.f, 12.f);
     FAR_DISTANCE = (float)ARRAY_MAX / scalar;
-    printf("Far Distance Scalar: %g\n", scalar);
+    printf("Far Distance Divisor: %g\n", scalar);
 #endif
     
     pp = (vec){0.f, 0.f, 0.f};
