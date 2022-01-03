@@ -139,7 +139,11 @@ const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
 #define SHIELD_DRAIN_RATE 0.06f
 #define REFINARY_YEILD 0.13f
 
-#define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
+#ifdef __arm__
+    #define ARRAY_MAX 2048 // 8 Megabytes of Asteroids
+#else
+    #define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
+#endif
 const f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
 typedef struct
 {
