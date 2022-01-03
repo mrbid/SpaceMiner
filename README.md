@@ -1,7 +1,7 @@
 # spaceminer
 A 3D space mining game.
 
-![Screenshot of the Space Miner game](https://dashboard.snapcraft.io/site_media/appmedia/2022/01/Screenshot_2022-01-02_18-12-12.png)
+[![Screenshot of the Space Miner game](https://dashboard.snapcraft.io/site_media/appmedia/2022/01/Screenshot_2022-01-02_18-12-12.png)](https://www.youtube.com/watch?v=PKAjwRyGCS0 "Space Miner Game Video")
 
 You just float around and collect space rocks.
 
