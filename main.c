@@ -1631,7 +1631,7 @@ int main(int argc, char** argv)
     timestamp(&strts[0]);
     printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
     printf("[%s] Mined: %u\n", strts, pm);
-    printf("[%s] Time-Taken: %s / %g\n", strts, tts, st-t);
+    printf("[%s] Time-Taken: %s / %g\n", strts, tts, t-st);
     printf("[%s] Game End.\n\n", strts);
 
     // done
