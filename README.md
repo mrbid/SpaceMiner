@@ -12,7 +12,7 @@ So asteroids have 5 elements:
 - `[dark, bottom right]` **Repel** _(allows you to push astroids away from you)_
 - `[aqua, back of player]` **Fuel** _(allows you to move around, without this, you are essentially dead)_
 
-The quantity of each element is represented by coloured cubic segements on the spaceman. You can see roughly what each asteroid has by colour tints on surface of the asteroid, but it's just an indicator, you never know, there could be gold below surface level.
+The quantity of each element is represented by coloured cubic segements on the spaceman. You can see roughly what each asteroid has by the colour tints on the asteroid surface, but it's just an indicator, you never know, there could be 'gold' below surface level.
 
 The aim of the game, whatever you want, try and mine every asteroid if you can. Or just see how long your can survive in space for.
 
