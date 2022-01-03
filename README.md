@@ -39,7 +39,7 @@ https://github.com/mrbid/spaceminer/raw/main/spaceminer
 
 ### [ARM64] Linux Binary (Raspbian 10)
 https://github.com/mrbid/spaceminer/raw/main/spaceminer_arm<br>
-_(tends to be a little out of date, snapcraft will supply the latest ARM version, but also this build tends to be a cut-down version designed to run better on an Raspberry PI that snapcraft wont supply, snapcraft only has an ARM version of the x86 build, which is pretty full-fat)_
+_(This version is set to a total of 2048 asteroids, 8x less than the x86 version, and runs between 30-40 FPS on a Raspberry PI 4B+)_
 
 ### Windows Binary
 https://github.com/mrbid/spaceminer/raw/main/spaceminer.exe<br>
