@@ -23,6 +23,7 @@ You just float around and collect space rocks.
 ## Mouse
  - `Left Click` = Break Asteroid
  - `Right Click` = Repel Asteroid
+ - `Mouse 4 Click` = Stop all Asteroids near by
  - `Middle Scroll` = Zoom in/out
 
 ## Downloads
