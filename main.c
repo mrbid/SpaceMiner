@@ -10,7 +10,7 @@
     Keyboard:
 
         F = FPS to console
-        P = Player dtats to console
+        P = Player stats to console
         N = New Game
         Q = Break Asteroid
         E = Stop all near by Asteroids
@@ -1104,7 +1104,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
         }
 
-        // break all rocks
+        // break rocks
         else if(key == GLFW_KEY_Q && pb > 0.f)
         {
             for(uint i = 0; i < ARRAY_MAX; i++)
@@ -1130,6 +1130,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
                         pre = fone(pre);
 
                         array_rocks[i].free = 1;
+
+                        char strts[16];
+                        timestamp(&strts[0]);
+                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
                     }
                 }
             }
@@ -1249,6 +1253,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                         pre = fone(pre);
 
                         array_rocks[i].free = 1;
+
+                        char strts[16];
+                        timestamp(&strts[0]);
+                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
                     }
                 }
             }
