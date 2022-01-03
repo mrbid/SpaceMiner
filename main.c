@@ -286,18 +286,17 @@ void rRock(uint i, f32 dist)
     // this is a super efficient way to render 9 different types of asteroid
     uint nbs = i * rrcs;
     if(nbs > 8){nbs = 8;}
-    if(bindstate == -1){bindstate = 1;} // lol trust me, it's good.
     if(nbs != bindstate)
     {
-        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[bindstate].vid);
+        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[nbs].vid);
         glVertexAttribPointer(position_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(position_id);
 
-        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[bindstate].nid);
+        glBindBuffer(GL_ARRAY_BUFFER, mdlRock[nbs].nid);
         glVertexAttribPointer(normal_id, 3, GL_FLOAT, GL_FALSE, 0, 0);
         glEnableVertexAttribArray(normal_id);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdlRock[bindstate].iid);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdlRock[nbs].iid);
         bindstate = nbs;
     }
 
