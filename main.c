@@ -9,6 +9,9 @@
 
     Keyboard:
 
+        F = FPS to console
+        P = Player Stats
+        N = New Game
         Q = Break Asteroid
         E = Stop all near by Asteroids
         R = Repel all near by Asteroids
@@ -1093,6 +1096,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         else if(key == GLFW_KEY_N)
             newGame(time(0));
 
+        // stats
+        else if(key == GLFW_KEY_P)
+        {
+            char strts[16];
+            timestamp(&strts[0]);
+            printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+        }
 
         // break all rocks
         else if(key == GLFW_KEY_Q && pb > 0.f)
@@ -1296,6 +1306,8 @@ int main(int argc, char** argv)
     printf("Space Miner\n");
     printf("James William Fletcher (james@voxdsp.com)\n\n");
     printf("Keyboard Input:\n");
+    printf("F = FPS to console\n");
+    printf("P = Player Stats\n");
     printf("N = New Game\n");
     printf("Q = Break Asteroid\n");
     printf("E = Stop all near by Asteroids\n");
