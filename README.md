@@ -8,7 +8,7 @@ You just float around and collect space rocks.
 So asteroids have 5 elements:
 - `[orange, top left]` **Break** _(this allows you to collect/break asteroids, without this, you are essentially dead)_
 - `[green, top right]` **Shield** _(getting too close to asteroids damages your shield, with no shield the damage goes straight to your fuel tank)_
-- `[purple, bottom left]` **Stop** _(asteroids generally dont move that fast but if you want to stop all the ones near you, this will do just that)_
+- `[purple, bottom left]` **Stop** _(asteroids generally don't move that fast but if you want to stop all the ones near you, this will do just that)_
 - `[dark, bottom right]` **Repel** _(allows you to push asteroids away from you)_
 - `[aqua, back of player]` **Fuel** _(allows you to move around, without this, you are essentially dead)_
 
