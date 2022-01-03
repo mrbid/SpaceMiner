@@ -13,8 +13,8 @@
         P = Player stats to console
         N = New Game
         Q = Break Asteroid
-        E = Stop all near by Asteroids
-        R = Repel all near by Asteroids
+        E = Stop all nearby Asteroids
+        R = Repel all nearby Asteroids
         W = Thrust Forward
         A = Turn Left
         S = Thrust Backward
@@ -27,6 +27,7 @@
 
         Left Click = Break Asteroid
         Right Click = Repel Asteroid
+        Mouse 4 Click = Stop all Asteroids nearby
         Scroll = Zoom in/out
 
 */
@@ -1101,7 +1102,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         {
             char strts[16];
             timestamp(&strts[0]);
-            printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+            printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
         }
 
         // break rocks
@@ -1115,7 +1116,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
                     if(dist < 30.f + array_rocks[i].scale)
                     {
                         pb -= 0.06f;
-                        pb = fzero(pb);
+                        pb = fzero(pb); // hack, yes user could mine beyond pb == 0.f in this loop, take it as a last chance
 
                         pf += array_rocks[i].qfuel * REFINARY_YEILD * 3.f;
                         pb += array_rocks[i].qbreak * REFINARY_YEILD;
@@ -1133,7 +1134,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
                         char strts[16];
                         timestamp(&strts[0]);
-                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
                     }
                 }
             }
@@ -1144,14 +1145,23 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         {
             for(uint i = 0; i < ARRAY_MAX; i++)
             {
-                if(array_rocks[i].free == 0)
+                if(array_rocks[i].free == 0 && array_rocks[i].rndf != 0.f)
                 {
                     const f32 dist = vDist(pp, array_rocks[i].pos);
                     if(dist < 333.f + array_rocks[i].scale)
                     {
                         psl -= 0.06f;
-                        psl = fzero(psl);
+                        if(psl <= 0.f)
+                        {
+                            psl = 0.f;
+                            break;
+                        }
                         array_rocks[i].vel = (vec){0.f, 0.f, 0.f};
+                        array_rocks[i].rndf = 0.f;
+
+                        char strts[16];
+                        timestamp(&strts[0]);
+                        printf("[%s] Repel %.2f\n", strts, psl);
                     }
                 }
             }
@@ -1169,9 +1179,17 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
                     {
                         //vRuv(&array_rocks[i].vel);
                         pre -= 0.06f;
-                        pre = fzero(pre);
+                        if(pre <= 0.f)
+                        {
+                            pre = 0.f;
+                            break;
+                        }
                         array_rocks[i].vel = pfd;
                         vMulS(&array_rocks[i].vel, array_rocks[i].vel, 42.f);
+
+                        char strts[16];
+                        timestamp(&strts[0]);
+                        printf("[%s] Stop %.2f\n", strts, pre);
                     }
                 }
             }
@@ -1228,7 +1246,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if(action == GLFW_PRESS)
     {
-        if(button == GLFW_MOUSE_BUTTON_LEFT)
+        if(button == GLFW_MOUSE_BUTTON_LEFT && pb > 0.f)
         {
             for(uint i = 0; i < ARRAY_MAX; i++)
             {
@@ -1238,7 +1256,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                     if(dist < 30.f + array_rocks[i].scale)
                     {
                         pb -= 0.06f;
-                        pb = fzero(pb);
+                        pb = fzero(pb); // hack, yes user could mine beyond pb == 0.f in this loop, take it as a last chance
 
                         pf += array_rocks[i].qfuel * REFINARY_YEILD * 3.f;
                         pb += array_rocks[i].qbreak * REFINARY_YEILD;
@@ -1256,13 +1274,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
                         char strts[16];
                         timestamp(&strts[0]);
-                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+                        printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
                     }
                 }
             }
         }
 
-        if(button == GLFW_MOUSE_BUTTON_RIGHT)
+        if(button == GLFW_MOUSE_BUTTON_RIGHT && pre > 0.f)
         {
             for(uint i = 0; i < ARRAY_MAX; i++)
             {
@@ -1273,9 +1291,43 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                     {
                         //vRuv(&array_rocks[i].vel);
                         pre -= 0.06f;
-                        pre = fzero(pre);
+                        if(pre <= 0.f)
+                        {
+                            pre = 0.f;
+                            break;
+                        }
                         array_rocks[i].vel = pfd;
                         vMulS(&array_rocks[i].vel, array_rocks[i].vel, 42.f);
+
+                        char strts[16];
+                        timestamp(&strts[0]);
+                        printf("[%s] Repel %.2f\n", strts, pre);
+                    }
+                }
+            }
+        }
+
+        if(button == GLFW_MOUSE_BUTTON_4 && psl > 0.f)
+        {
+            for(uint i = 0; i < ARRAY_MAX; i++)
+            {
+                if(array_rocks[i].free == 0 && array_rocks[i].rndf != 0.f)
+                {
+                    const f32 dist = vDist(pp, array_rocks[i].pos);
+                    if(dist < 333.f + array_rocks[i].scale)
+                    {
+                        psl -= 0.06f;
+                        if(psl <= 0.f)
+                        {
+                            psl = 0.f;
+                            break;
+                        }
+                        array_rocks[i].vel = (vec){0.f, 0.f, 0.f};
+                        array_rocks[i].rndf = 0.f;
+
+                        char strts[16];
+                        timestamp(&strts[0]);
+                        printf("[%s] Stop %.2f\n", strts, psl);
                     }
                 }
             }
@@ -1318,8 +1370,8 @@ int main(int argc, char** argv)
     printf("P = Player stats to console\n");
     printf("N = New Game\n");
     printf("Q = Break Asteroid\n");
-    printf("E = Stop all near by Asteroids\n");
-    printf("R = Repel all near by Asteroids\n");
+    printf("E = Stop all nearby Asteroids\n");
+    printf("R = Repel all nearby Asteroids\n");
     printf("W = Thrust Forward\n");
     printf("A = Turn Left\n");
     printf("S = Thrust Backward\n");
@@ -1329,6 +1381,7 @@ int main(int argc, char** argv)
     printf("\nMouse Input:\n");
     printf("Left Click = Break Asteroid\n");
     printf("Right Click = Repel Asteroid\n");
+    printf("Mouse 4 Click = Stop all Asteroids nearby\n");
     printf("Scroll = Zoom in/out\n");
     printf("\n.....\n\n");
 
@@ -1527,7 +1580,7 @@ int main(int argc, char** argv)
     // end
     char strts[16];
     timestamp(&strts[0]);
-    printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Slow %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+    printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
     printf("[%s] Game End.\n\n", strts);
 
     // done
