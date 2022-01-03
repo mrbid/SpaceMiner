@@ -1107,7 +1107,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         {
             char strts[16];
             timestamp(&strts[0]);
-            printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
+            printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f - Mined %u\n", strts, pf, pb, ps, psl, pre, pm);
         }
 
         // break rocks
