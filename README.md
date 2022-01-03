@@ -5,6 +5,15 @@ A 3D space mining game.
 
 You just float around and collect space rocks.
 
+So asteroids have 5 elements:
+- `[orange, top left]` **Break** _(this allows you to collect/break astroids, without this, you are essentially dead)_
+- `[green, top right]` **Shield** _(getting too close to asteroids damages your shield, whith no shield the damage goes straight to your fuel tank)_
+- `[purple, bottom left]` **Stop** _(asteroids generally dont move that fast but if you want to stop all the ones near you, this will do just that)_
+- `[dark, bottom right]` **Repel** _(allows you to push astroids away from you)_
+- `[aqua, back of player]` **Fuel** _(allows you to move around, without this, you are essentially dead)_
+
+The quantity of each element is represented by coloured cubic segements on the spaceman.
+
 ## Keyboard
  - `F` = FPS to console
  - `P` = Player stats to console
