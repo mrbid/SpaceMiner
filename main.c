@@ -144,7 +144,7 @@ const f32 RECIP_MAX_ROCK_SCALE = 1.f/(MAX_ROCK_SCALE+10.f);
     const f32 FAR_DISTANCE = (float)ARRAY_MAX / 4.f;
 #else
     #define ARRAY_MAX 16384 // 64 Megabytes of Asteroids
-    const f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
+    f32 FAR_DISTANCE = (float)ARRAY_MAX / 8.f;
 #endif
 typedef struct
 {
@@ -840,6 +840,12 @@ void newGame(unsigned int seed)
     printf("[%s] Game Start [%u].\n", strts, seed);
     
     glfwSetWindowTitle(window, "Space Miner");
+
+#ifndef __arm__
+    const f32 scalar = esRandFloat(8.f, 12.f);
+    FAR_DISTANCE = (float)ARRAY_MAX / scalar;
+    printf("Far Distance Scalar: %g\n", scalar);
+#endif
     
     pp = (vec){0.f, 0.f, 0.f};
     pv = (vec){0.f, 0.f, 0.f};
