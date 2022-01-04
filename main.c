@@ -1443,10 +1443,19 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 //*************************************
 int main(int argc, char** argv)
 {
+    // allow custom msaa level
+    int msaa = 16;
+    if(argc >= 2){msaa = atoi(argv[1]);}
+
     // help
+    printf("----\n");
     printf("Space Miner\n");
-    printf("James William Fletcher (james@voxdsp.com)\n\n");
-    printf("Keyboard Input:\n");
+    printf("----\n");
+    printf("James William Fletcher (james@voxdsp.com)\n");
+    printf("----\n");
+    printf("There is only one command line argument, and that is the MSAA level 0-16.\n");
+    printf("----\n");
+    printf("~ Keyboard Input:\n");
     printf("F = FPS to console\n");
     printf("P = Player stats to console\n");
     printf("N = New Game\n");
@@ -1459,18 +1468,19 @@ int main(int argc, char** argv)
     printf("D = Turn Right\n");
     printf("Shift = Thrust Down\n");
     printf("Space = Thrust Up\n");
-    printf("\nMouse Input:\n");
+    printf("----\n");
+    printf("~ Mouse Input:\n");
     printf("Left Click = Break Asteroid\n");
     printf("Right Click = Repel Asteroid\n");
     printf("Mouse 4 Click = Stop all Asteroids nearby\n");
     printf("Scroll = Zoom in/out\n");
-    printf("\n.....\n\n");
+    printf("----\n\n");
 
     // init glfw
     if(!glfwInit()){exit(EXIT_FAILURE);}
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_SAMPLES, 16);
+    glfwWindowHint(GLFW_SAMPLES, msaa);
     window = glfwCreateWindow(winw, winh, "Space Miner", NULL, NULL);
     if(!window)
     {
