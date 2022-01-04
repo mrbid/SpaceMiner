@@ -50,7 +50,7 @@ https://github.com/mrbid/spaceminer/raw/main/spaceminer
 
 ### [ARM64] Linux Binary (Raspbian 10)
 https://github.com/mrbid/spaceminer/raw/main/spaceminer_arm<br>
-_(This version is set to a total of 2048 asteroids, 8x less than the x86 version, and runs between 30-40 FPS on a Raspberry PI 4B+)_
+_(This version is set to a total of 2048 asteroids, 8x less than the x86 version, and runs between 30-40 FPS on a Raspberry PI 4B+ at a resolution of 1024x768)_
 
 ### Windows Binary
 https://github.com/mrbid/spaceminer/raw/main/spaceminer.exe<br>
