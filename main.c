@@ -193,13 +193,17 @@ typedef struct
 gi array_rocks[ARRAY_MAX] = {0};
 
 // gets a free/unused rock
-sint freeRock() // unused i know, the original idea was to dynamically pop out ores when rocks are mined which then you need to manually float to and collect but, I went off the idea.
+/*
+// the original idea was to dynamically pop out ores when rocks are mined
+// which then you need to manually float to and collect but, I went off the idea.
+sint freeRock() 
 {
     for(sint i = 0; i < ARRAY_MAX; i++)
         if(array_rocks[i].free == 1)
             return i;
     return -1;
 }
+*/
 
 // camera vars
 uint focus_cursor = 1;
@@ -291,7 +295,15 @@ void rRock(uint i, f32 dist)
             mRotX(&model, mag);
     }
 
-    mScale(&model, array_rocks[i].scale, array_rocks[i].scale, array_rocks[i].scale);
+    if(array_rocks[i].free == 2)
+    {
+        array_rocks[i].scale -= 32.f*dt;
+        if(array_rocks[i].scale <= 0.f)
+            array_rocks[i].free = 1;
+        mScale(&model, array_rocks[i].scale, array_rocks[i].scale, array_rocks[i].scale);
+    }
+    else
+        mScale(&model, array_rocks[i].scale, array_rocks[i].scale, array_rocks[i].scale);
 
     mMul(&modelview, &model, &view);
 
@@ -1095,7 +1107,6 @@ void main_loop()
     mRotate(&view, xrot, 0.f, 1.f, 0.f);
     mTranslate(&view, -pp.x, -pp.y, -pp.z);
 
-
 //*************************************
 // begin render
 //*************************************
@@ -1114,7 +1125,7 @@ void main_loop()
     so = 0.f;
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
-        if(array_rocks[i].free == 0)
+        if(array_rocks[i].free != 1)
         {
             vec inc;
             vMulS(&inc, array_rocks[i].vel, dt);
@@ -1186,7 +1197,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
                         psl = fone(psl);
                         pre = fone(pre);
 
-                        array_rocks[i].free = 1;
+                        array_rocks[i].free = 2;
                         pm++;
 
                         timeTaken();
@@ -1333,7 +1344,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                         psl = fone(psl);
                         pre = fone(pre);
 
-                        array_rocks[i].free = 1;
+                        array_rocks[i].free = 2;
                         pm++;
 
                         timeTaken();
