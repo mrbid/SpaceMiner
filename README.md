@@ -16,6 +16,18 @@ The quantity of each element is represented by coloured cubic segments on the sp
 
 The aim of the game, whatever you want, try and mine every asteroid if you can. Or just see how long you can survive in space.
 
+## General Controls
+ - `W` = Thrust Forward
+ - `S` = Thrust Backward
+ - `Left Shift` = Thrust Down
+ - `Space` = Thrust Up
+ - `A` = Turn Left
+ - `D` = Turn Right
+ - `Left Click` = Break Asteroid
+ - `Right Click` = Repel Asteroid
+ - `Mouse 4 Click` = Stop all Asteroids nearby
+ - `Middle Scroll` = Zoom in/out
+
 ## Keyboard
  - `F` = FPS to console
  - `P` = Player stats to console
