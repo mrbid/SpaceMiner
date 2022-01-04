@@ -221,6 +221,7 @@ vec pfd;// face direction
 f32 pf; // fuel
 f32 pb; // break
 f32 ps; // shield
+f32 psp;// speed
 f32 psl;// slow
 f32 pre;// repel
 uint pm;// mined asteroid count
@@ -347,7 +348,7 @@ void rLegs(f32 x, f32 y, f32 z, f32 rx)
     mIdent(&model);
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
-    f32 mag = vMag(pv)*32.f;
+    f32 mag = psp*32.f;
     if(mag > 0.4f)
         mag = 0.4f;
     mRotY(&model, mag);
@@ -449,7 +450,7 @@ void rArms(f32 x, f32 y, f32 z, f32 rx)
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
 
-    f32 mag = vMag(pv)*32.f;
+    f32 mag = psp*32.f;
     if(mag > 0.4f)
         mag = 0.4f;
     mRotY(&model, mag);
@@ -483,7 +484,7 @@ void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
 
-    f32 mag = vMag(pv)*32.f;
+    f32 mag = psp*32.f;
     if(mag > 0.4f)
         mag = 0.4f;
     mRotY(&model, mag);
@@ -518,7 +519,7 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
     mTranslate(&model, x, y, z);
     mRotX(&model, -rx);
 
-    f32 mag = vMag(pv)*32.f;
+    f32 mag = psp*32.f;
     if(mag > 0.4f)
         mag = 0.4f;
     mRotY(&model, mag);
@@ -796,6 +797,8 @@ void rShieldElipse(f32 x, f32 y, f32 z, f32 rx, f32 opacity)
 
 void rPlayer(f32 x, f32 y, f32 z, f32 rx)
 {
+    psp = vMag(pv);
+
     rLegs(x, y, z, rx);
     rBody(x, y, z, rx);
     rFuel(x, y, z, rx);
@@ -883,6 +886,7 @@ void newGame(unsigned int seed)
     ps = 1.f;
     psl = 0.f;
     pre = 0.f;
+    psp = 0.f;
 
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
@@ -1050,7 +1054,7 @@ void main_loop()
         glfwSetWindowTitle(window, title);
         char strts[16];
         timestamp(&strts[0]);
-        printf("[%s] Fuel: %.2f\n", strts, pf);
+        printf("[%s] Fuel: %.2f - Speed: %g\n", strts, pf, psp*100.f);
         lf = nf;
     }
 
@@ -1649,7 +1653,7 @@ int main(int argc, char** argv)
     timestamp(&strts[0]);
     printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
     printf("[%s] Mined: %u\n", strts, pm);
-    printf("[%s] Time-Taken: %s / %g\n", strts, tts, t-st);
+    printf("[%s] Time-Taken: %s - %g Seconds\n", strts, tts, t-st);
     printf("[%s] Game End.\n\n", strts);
 
     // done
