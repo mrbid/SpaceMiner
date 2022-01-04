@@ -14,7 +14,7 @@ So asteroids have 5 elements:
 
 The quantity of each element is represented by coloured cubic segments on the spaceman. You can see roughly what each asteroid has by the colour tints on the asteroid surface, but it's just an indicator, you never know, there could be 'gold' below surface level.
 
-The aim of the game, whatever you want, try and mine every asteroid if you can. Or just see how long your can survive in space for.
+The aim of the game, whatever you want, try and mine every asteroid if you can. Or just see how long you can survive in space.
 
 ## Keyboard
  - `F` = FPS to console
