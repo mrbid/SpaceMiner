@@ -30,6 +30,24 @@
         Mouse 4 Click = Stop all Asteroids nearby
         Scroll = Zoom in/out
 
+
+    Notes:
+
+        Frustum Culling:
+
+            In a game like this by introducing frustum culling all you are doing is introducing
+            frame rate instability, the fewer asteroids on-screen with frustum culling the more frames
+            per second the game will get, and vice-versa. But in a game like this, you could get all
+            asteroids in the frame at once, or even just very varied amounts. Frame rate instability is
+            always worse than having a stable, but lower, frame rate.
+
+            I've never been a great fan of frustum culling, mainly because it only makes sense in a
+            very niche avenue of 3D games, albeit the most popular niche, FPS games.
+
+            The popularity of First-Person can hamper creativity, other 3D camera systems are rarely
+            ever explored and partly this is due to there only being four main 3D camera systems;
+            Fixed Camera, Ghost/Chase Camera, Orbit Camera, and First Person Camera.
+
 */
 
 #include <math.h>
