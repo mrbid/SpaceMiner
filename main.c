@@ -228,6 +228,7 @@ f32 ps; // shield
 f32 psp;// speed
 f32 psl;// slow
 f32 pre;// repel
+uint lf;// last fuel
 uint pm;// mined asteroid count
 double st=0; // start time
 char tts[32];// time taken string
@@ -260,17 +261,32 @@ static inline f32 fsat(f32 f)
     return f;
 }
 
-void timeTaken()
+void timeTaken(uint ss)
 {
-    const double tt = t-st;
-    if(tt < 60.0)
-        sprintf(tts, "%.2f Seconds", tt);
-    else if(tt < 3600.0)
-        sprintf(tts, "%.2f Minutes", tt * 0.016666667);
-    else if(tt < 216000.0)
-        sprintf(tts, "%.2f Hours", tt * 0.000277778);
-    else if(tt < 12960000.0)
-        sprintf(tts, "%.2f Days", tt * 0.00000463);
+    if(ss == 1)
+    {
+        const double tt = t-st;
+        if(tt < 60.0)
+            sprintf(tts, "%.2f Sec", tt);
+        else if(tt < 3600.0)
+            sprintf(tts, "%.2f Min", tt * 0.016666667);
+        else if(tt < 216000.0)
+            sprintf(tts, "%.2f Hr", tt * 0.000277778);
+        else if(tt < 12960000.0)
+            sprintf(tts, "%.2f Days", tt * 0.00000463);
+    }
+    else
+    {
+        const double tt = t-st;
+        if(tt < 60.0)
+            sprintf(tts, "%.2f Seconds", tt);
+        else if(tt < 3600.0)
+            sprintf(tts, "%.2f Minutes", tt * 0.016666667);
+        else if(tt < 216000.0)
+            sprintf(tts, "%.2f Hours", tt * 0.000277778);
+        else if(tt < 12960000.0)
+            sprintf(tts, "%.2f Days", tt * 0.00000463);
+    }
 }
 
 //*************************************
@@ -870,7 +886,7 @@ void newGame(unsigned int seed)
 
     char strts[16];
     timestamp(&strts[0]);
-    printf("[%s] Game Start [%u].\n", strts, seed);
+    printf("\n[%s] Game Start [%u].\n", strts, seed);
     
     glfwSetWindowTitle(window, "Space Miner");
 
@@ -886,6 +902,8 @@ void newGame(unsigned int seed)
     pld = (vec){0.f, 0.f, 0.f};
 
     st = 0;
+
+    lf = 100;
 
     ct = 0;
     pm = 0;
@@ -1056,18 +1074,23 @@ void main_loop()
         pf = fzero(pf);
     }
 
-    static uint lf = 0;
+    static double ltut = 3.0;
     const uint nf = pf*100.f;
     if(nf != lf)
     {
-        timeTaken();
-        char title[256];
-        sprintf(title, "Space Miner - Fuel %u - Mined %u - Time %s", nf, pm, tts);
-        glfwSetWindowTitle(window, title);
         char strts[16];
         timestamp(&strts[0]);
         printf("[%s] Fuel: %.2f - Speed: %g\n", strts, pf, psp*100.f);
+    }
+    if(nf != lf || t > ltut)
+    {
+        timeTaken(1);
+        char title[256];
+        //sprintf(title, "Space Miner - Fuel %u - Mined %u - Time %s", nf, pm, tts);
+        sprintf(title, "| %s | Fuel %u | Speed %.2f | Mined %u |", tts, (uint)(pf*100.f), psp*100.f, pm);
+        glfwSetWindowTitle(window, title);
         lf = nf;
+        ltut = t + 3.0;
     }
 
     // increment player direction
@@ -1162,7 +1185,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
         // new game
         else if(key == GLFW_KEY_N)
+        {
+            // end
+            timeTaken(0);
+            char strts[16];
+            timestamp(&strts[0]);
+            printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f - Mined %u\n", strts, pf, pb, ps, psl, pre, pm);
+            printf("[%s] Time-Taken: %s or %g Seconds\n", strts, tts, t-st);
+            printf("[%s] Game End.\n", strts);
+            
+            // new
             newGame(time(0));
+        }
 
         // stats
         else if(key == GLFW_KEY_P)
@@ -1200,9 +1234,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
                         array_rocks[i].free = 2;
                         pm++;
 
-                        timeTaken();
+                        timeTaken(1);
                         char title[256];
-                        sprintf(title, "Space Miner - Fuel %u - Mined %u - Time %s", (uint)(pf*100.f), pm, tts);
+                        //sprintf(title, "Space Miner - Fuel %u - Mined %u - Time %s", (uint)(pf*100.f), pm, tts);
+                        sprintf(title, "| %s | Fuel %u | Speed %.2f | Mined %u |", tts, (uint)(pf*100.f), psp*100.f, pm);
                         glfwSetWindowTitle(window, title);
 
                         char strts[16];
@@ -1347,9 +1382,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
                         array_rocks[i].free = 2;
                         pm++;
 
-                        timeTaken();
+                        timeTaken(1);
                         char title[256];
-                        sprintf(title, "Space Miner - Fuel %u - Mined %u - Time %s", (uint)(pf*100.f), pm, tts);
+                        //sprintf(title, "Space Miner - Fuel %u - Mined %u - Time %s", (uint)(pf*100.f), pm, tts);
+                        sprintf(title, "| %s | Fuel %u | Speed %.2f | Mined %u |", tts, (uint)(pf*100.f), psp*100.f, pm);
                         glfwSetWindowTitle(window, title);
 
                         char strts[16];
@@ -1474,7 +1510,7 @@ int main(int argc, char** argv)
     printf("Right Click = Repel Asteroid\n");
     printf("Mouse 4 Click = Stop all Asteroids nearby\n");
     printf("Scroll = Zoom in/out\n");
-    printf("----\n\n");
+    printf("----\n");
 
     // init glfw
     if(!glfwInit()){exit(EXIT_FAILURE);}
@@ -1669,12 +1705,11 @@ int main(int argc, char** argv)
     }
 
     // end
-    timeTaken();
+    timeTaken(0);
     char strts[16];
     timestamp(&strts[0]);
-    printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f\n", strts, pf, pb, ps, psl, pre);
-    printf("[%s] Mined: %u\n", strts, pm);
-    printf("[%s] Time-Taken: %s - %g Seconds\n", strts, tts, t-st);
+    printf("[%s] Stats: Fuel %.2f - Break %.2f - Shield %.2f - Stop %.2f - Repel %.2f - Mined %u\n", strts, pf, pb, ps, psl, pre, pm);
+    printf("[%s] Time-Taken: %s or %g Seconds\n", strts, tts, t-st);
     printf("[%s] Game End.\n\n", strts);
 
     // done
