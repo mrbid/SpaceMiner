@@ -16,6 +16,8 @@ The quantity of each element is represented by coloured cubic segments on the sp
 
 The aim of the game, whatever you want, try and mine every asteroid if you can. Or just see how long you can survive in space.
 
+It can be hard to appreciate how many triangles are rendered in each frame, excluding the astronaut, all of the asteroids make up 1.3 Million (1,310,720) triangles. This is an amicable amount of triangles per frame for most modern computers to render meaning that this game should render at a high framerate across the board.
+
 ## General Controls
  - `W` = Thrust Forward
  - `S` = Thrust Backward
