@@ -325,9 +325,7 @@ void rRock(uint i, f32 dist)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
-    glUniform3f(color_id, 1.f, 1.f, 1.f);
 
     // unique colour arrays for each rock within visible distance
     if(array_rocks[i].nores == 0 && dist < 333.f)
@@ -385,7 +383,6 @@ void rLegs(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
 
@@ -424,7 +421,6 @@ void rBody(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
 
@@ -453,7 +449,6 @@ void rFuel(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.062f+(1.f-pf)), fone(1.f+(1.f-pf)), fone(0.873f+(1.f-pf)));
 
@@ -487,7 +482,6 @@ void rArms(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
 
@@ -521,7 +515,6 @@ void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     //glUniform3f(color_id, 1.f, 0.f, 0.f);
     glUniform3f(color_id, 0.062f, 1.f, 0.873f);
@@ -556,7 +549,6 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 0.062f, 1.f, 0.873f);
 
@@ -599,7 +591,6 @@ void rFace(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
 
@@ -643,7 +634,6 @@ void rBreak(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.644f+(1.f-pb)), fone(0.209f+(1.f-pb)), fone(0.f+(1.f-pb)));
 
@@ -687,7 +677,6 @@ void rShield(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.f+(1.f-ps)), fone(0.8f+(1.f-ps)), fone(0.28f+(1.f-ps)));
 
@@ -731,7 +720,6 @@ void rSlow(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.429f+(1.f-psl)), fone(0.f+(1.f-psl)), fone(0.8f+(1.f-psl)));
 
@@ -775,7 +763,6 @@ void rRepel(f32 x, f32 y, f32 z, f32 rx)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.095f+(1.f-pre)), fone(0.069f+(1.f-pre)), fone(0.041f+(1.f-pre)));
 
@@ -804,7 +791,6 @@ void rShieldElipse(f32 x, f32 y, f32 z, f32 rx, f32 opacity)
 
     glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
-    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     glUniform1f(opacity_id, opacity);
     glUniform3f(color_id, 0.f, 0.717, 0.8f);
 
@@ -1141,10 +1127,12 @@ void main_loop()
 
     // render player
     shadeLambert1(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &opacity_id);
+    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     rPlayer(pp.x, pp.y, pp.z, pr);
 
     // render asteroids
     shadeLambert3(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &opacity_id);
+    glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     so = 0.f;
     for(uint i = 0; i < ARRAY_MAX; i++)
     {
