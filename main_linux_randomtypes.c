@@ -75,6 +75,9 @@
 #endif
 
 // RandomType: sRandFloat esRandFloat fRandFloat
+// sRandFloat   - Slow & Cryptographically secure randoms.
+// esRandFloat  - regular stdlib rand() function
+// fRandFloat   - fast random from vec.h (SEIR RAND / MMX RAND)
 #define uRandFloat esRandFloat
 
 // uncommenting this define will enable the MMX random when using fRandFloat (it's a marginally slower)
