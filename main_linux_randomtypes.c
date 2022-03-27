@@ -1185,7 +1185,21 @@ void main_loop()
             vMulS(&inc, array_rocks[i].vel, dt);
             vAdd(&array_rocks[i].pos, array_rocks[i].pos, inc);
 
-            const f32 dist = vDist(pp, array_rocks[i].pos);
+            // const f32 dist = vDist(pp, array_rocks[i].pos);
+            // printf("%g, %g\n", dist,  vDist(pp, array_rocks[i].pos));
+            // if(dist < 10.f + array_rocks[i].scale)
+            //     if(so == 0.f || dist < so){so = dist;}
+
+            // faster? maybe? more branches but less sqrtps()
+            const float xd = fabs(pp.x - array_rocks[i].pos.x);
+            const float yd = fabs(pp.y - array_rocks[i].pos.y);
+            const float zd = fabs(pp.z - array_rocks[i].pos.z);
+            float dist = xd;
+            if(yd > dist)
+                dist = yd;
+            if(zd > dist)
+                dist = zd;
+
             if(dist < 10.f + array_rocks[i].scale)
                 if(so == 0.f || dist < so){so = dist;}
 
