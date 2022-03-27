@@ -61,6 +61,7 @@ void  vNorm(vec* v);
 float vDist(const vec v1, const vec v2);
 float vDistSq(const vec a, const vec b);
 float vDistMh(const vec a, const vec b); // manhattan
+float vDistLa(const vec a, const vec b); // longest axis
 float vMod(const vec v); // modulus
 float vMag(const vec v); // magnitude
 void  vInv(vec* v); // invert
@@ -252,6 +253,21 @@ float vDistSq(const vec a, const vec b)
 float vDistMh(const vec a, const vec b)
 {
     return (a.x - b.x) + (a.y - b.y) + (a.z - b.z);
+}
+
+float vDistLa(const vec v1, const vec v2)
+{
+    const float xm = fabs(v1.x - v2.x);
+    const float ym = fabs(v1.y - v2.y);
+    const float zm = fabs(v1.z - v2.z);
+
+    float dist = xm;
+    if(ym > dist)
+        dist = ym;
+    if(zm > dist)
+        dist = zm;
+
+    return dist;
 }
 
 void vReflect(vec* r, const vec v, const vec n)
