@@ -87,7 +87,7 @@ void vMulS(vec* r, const vec v1, const float v2);
 static inline float rsqrtss(float f)
 {
 #ifdef NOSSE
-    return 1.f/sqrt(f);
+    return 1.f/sqrtf(f);
 #else
     return _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(f)));
 #endif
@@ -96,7 +96,7 @@ static inline float rsqrtss(float f)
 static inline float sqrtps(float f)
 {
 #ifdef NOSSE
-    return sqrt(f);
+    return sqrtf(f);
 #else
     return _mm_cvtss_f32(_mm_sqrt_ps(_mm_set_ss(f)));
 #endif
