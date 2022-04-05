@@ -1191,9 +1191,9 @@ void main_loop()
             //     if(so == 0.f || dist < so){so = dist;}
 
             // faster? maybe? more branches but less sqrtps()
-            const float xd = fabs(pp.x - array_rocks[i].pos.x);
-            const float yd = fabs(pp.y - array_rocks[i].pos.y);
-            const float zd = fabs(pp.z - array_rocks[i].pos.z);
+            const float xd = fabsf(pp.x - array_rocks[i].pos.x);
+            const float yd = fabsf(pp.y - array_rocks[i].pos.y);
+            const float zd = fabsf(pp.z - array_rocks[i].pos.z);
             float dist = xd;
             if(yd > dist)
                 dist = yd;
@@ -1524,6 +1524,20 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 //*************************************
 int main(int argc, char** argv)
 {
+    // float o = 0.f;
+    // uint64_t st = microtime();
+    // for(uint64_t i = 0; i < 30000000000; i++)
+    //    o += vDist((vec){randf(),randf(),randf()}, (vec){randf(),randf(),randf()});
+    // printf("vDist: %lu\n", microtime()-st);
+
+    // o = 0.f;
+    // st = microtime();
+    // for(uint64_t i = 0; i < 30000000000; i++)
+    //    o += vDistLa((vec){randf(),randf(),randf()}, (vec){randf(),randf(),randf()});
+    // printf("vDistLa: %lu\n", microtime()-st);
+
+    // exit(0);
+
     // allow custom msaa level
     int msaa = 16;
     if(argc >= 2){msaa = atoi(argv[1]);}
