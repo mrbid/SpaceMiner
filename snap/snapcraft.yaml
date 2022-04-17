@@ -3,7 +3,7 @@ base: core20
 version: '1.0'
 summary: A 3D space mining game.
 description: |
-  description coming soon
+  The aim of the game, whatever you want, try and mine every asteroid if you can. Or just see how long you can survive in space.
 
 grade: stable
 confinement: strict
