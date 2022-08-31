@@ -1474,7 +1474,7 @@ int main(int argc, char** argv)
     printf("----\n");
     printf("Space Miner\n");
     printf("----\n");
-    printf("James William Fletcher (james@voxdsp.com)\n");
+    printf("James William Fletcher (github.com/mrbid)\n");
     printf("----\n");
     printf("There is only one command line argument, and that is the MSAA level 0-16.\n");
     printf("----\n");
