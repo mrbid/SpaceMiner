@@ -1,5 +1,5 @@
 /*
-    James William Fletcher (james@voxdsp.com)
+    James William Fletcher (github.com/mrbid)
         December 2021
 
     Info:
@@ -138,7 +138,6 @@ mat projection;
 mat view;
 mat model;
 mat modelview;
-mat viewrot;
 
 // render state inputs
 vec lightpos = {0.f, 0.f, 0.f};
@@ -361,7 +360,6 @@ void rRock(uint i, f32 dist)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
 
@@ -418,7 +416,6 @@ void rLegs(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
@@ -456,7 +453,6 @@ void rBody(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
@@ -484,7 +480,6 @@ void rFuel(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.062f+(1.f-pf)), fone(1.f+(1.f-pf)), fone(0.873f+(1.f-pf)));
@@ -517,7 +512,6 @@ void rArms(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
@@ -550,7 +544,6 @@ void rLeftFlame(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     //glUniform3f(color_id, 1.f, 0.f, 0.f);
@@ -584,7 +577,6 @@ void rRightFlame(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 0.062f, 1.f, 0.873f);
@@ -626,7 +618,6 @@ void rFace(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, 1.f, 1.f, 1.f);
@@ -669,7 +660,6 @@ void rBreak(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.644f+(1.f-pb)), fone(0.209f+(1.f-pb)), fone(0.f+(1.f-pb)));
@@ -712,7 +702,6 @@ void rShield(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.f+(1.f-ps)), fone(0.8f+(1.f-ps)), fone(0.28f+(1.f-ps)));
@@ -755,7 +744,6 @@ void rSlow(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.429f+(1.f-psl)), fone(0.f+(1.f-psl)), fone(0.8f+(1.f-psl)));
@@ -798,7 +786,6 @@ void rRepel(f32 x, f32 y, f32 z, f32 rx)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, 1.0f);
     glUniform3f(color_id, fone(0.095f+(1.f-pre)), fone(0.069f+(1.f-pre)), fone(0.041f+(1.f-pre)));
@@ -826,7 +813,6 @@ void rShieldElipse(f32 x, f32 y, f32 z, f32 rx, f32 opacity)
 
     mMul(&modelview, &model, &view);
 
-    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniformMatrix4fv(modelview_id, 1, GL_FALSE, (f32*) &modelview.m[0][0]);
     glUniform1f(opacity_id, opacity);
     glUniform3f(color_id, 0.f, 0.717, 0.8f);
@@ -1170,11 +1156,13 @@ void main_loop()
 
     // render player
     shadeLambert1(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &opacity_id);
+    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     rPlayer(pp.x, pp.y, pp.z, pr);
 
     // render asteroids
     shadeLambert3(&position_id, &projection_id, &modelview_id, &lightpos_id, &normal_id, &color_id, &opacity_id);
+    glUniformMatrix4fv(projection_id, 1, GL_FALSE, (f32*) &projection.m[0][0]);
     glUniform3f(lightpos_id, lightpos.x, lightpos.y, lightpos.z);
     so = 0.f;
     for(uint i = 0; i < ARRAY_MAX; i++)
@@ -1611,62 +1599,62 @@ int main(int argc, char** argv)
     // ***** BIND FACE *****
     esBind(GL_ARRAY_BUFFER, &mdlFace.vid, face_vertices, sizeof(face_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlFace.nid, face_normals, sizeof(face_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlFace.iid, face_indices, sizeof(face_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlFace.iid, face_indices, sizeof(face_indices), GL_STATIC_DRAW);
 
     // ***** BIND BODY *****
     esBind(GL_ARRAY_BUFFER, &mdlBody.vid, body_vertices, sizeof(body_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlBody.nid, body_normals, sizeof(body_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlBody.iid, body_indices, sizeof(body_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlBody.iid, body_indices, sizeof(body_indices), GL_STATIC_DRAW);
 
     // ***** BIND ARMS *****
     esBind(GL_ARRAY_BUFFER, &mdlArms.vid, arms_vertices, sizeof(arms_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlArms.nid, arms_normals, sizeof(arms_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlArms.iid, arms_indices, sizeof(arms_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlArms.iid, arms_indices, sizeof(arms_indices), GL_STATIC_DRAW);
 
     // ***** BIND LEFT FLAME *****
     esBind(GL_ARRAY_BUFFER, &mdlLeftFlame.vid, left_flame_vertices, sizeof(left_flame_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlLeftFlame.nid, left_flame_normals, sizeof(left_flame_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlLeftFlame.iid, left_flame_indices, sizeof(left_flame_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlLeftFlame.iid, left_flame_indices, sizeof(left_flame_indices), GL_STATIC_DRAW);
 
     // ***** BIND RIGHT FLAME *****
     esBind(GL_ARRAY_BUFFER, &mdlRightFlame.vid, right_flame_vertices, sizeof(right_flame_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRightFlame.nid, right_flame_normals, sizeof(right_flame_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRightFlame.iid, right_flame_indices, sizeof(right_flame_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRightFlame.iid, right_flame_indices, sizeof(right_flame_indices), GL_STATIC_DRAW);
 
     // ***** BIND LEGS *****
     esBind(GL_ARRAY_BUFFER, &mdlLegs.vid, legs_vertices, sizeof(legs_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlLegs.nid, legs_normals, sizeof(legs_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlLegs.iid, legs_indices, sizeof(legs_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlLegs.iid, legs_indices, sizeof(legs_indices), GL_STATIC_DRAW);
 
     // ***** BIND FUEL *****
     esBind(GL_ARRAY_BUFFER, &mdlFuel.vid, fuel_vertices, sizeof(fuel_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlFuel.nid, fuel_normals, sizeof(fuel_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlFuel.iid, fuel_indices, sizeof(fuel_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlFuel.iid, fuel_indices, sizeof(fuel_indices), GL_STATIC_DRAW);
 
     // ***** BIND SHIELD *****
     esBind(GL_ARRAY_BUFFER, &mdlShield.vid, shield_vertices, sizeof(shield_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlShield.nid, shield_normals, sizeof(shield_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlShield.iid, shield_indices, sizeof(shield_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlShield.iid, shield_indices, sizeof(shield_indices), GL_STATIC_DRAW);
 
     // ***** BIND P-BREAK *****
     esBind(GL_ARRAY_BUFFER, &mdlPbreak.vid, pbreak_vertices, sizeof(pbreak_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlPbreak.nid, pbreak_normals, sizeof(pbreak_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlPbreak.iid, pbreak_indices, sizeof(pbreak_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlPbreak.iid, pbreak_indices, sizeof(pbreak_indices), GL_STATIC_DRAW);
 
     // ***** BIND P-SHIELD *****
     esBind(GL_ARRAY_BUFFER, &mdlPshield.vid, pshield_vertices, sizeof(pshield_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlPshield.nid, pshield_normals, sizeof(pshield_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlPshield.iid, pshield_indices, sizeof(pshield_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlPshield.iid, pshield_indices, sizeof(pshield_indices), GL_STATIC_DRAW);
 
     // ***** BIND P-SLOW *****
     esBind(GL_ARRAY_BUFFER, &mdlPslow.vid, pslow_vertices, sizeof(pslow_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlPslow.nid, pslow_normals, sizeof(pslow_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlPslow.iid, pslow_indices, sizeof(pslow_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlPslow.iid, pslow_indices, sizeof(pslow_indices), GL_STATIC_DRAW);
 
     // ***** BIND P-REPEL *****
     esBind(GL_ARRAY_BUFFER, &mdlPrepel.vid, prepel_vertices, sizeof(prepel_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlPrepel.nid, prepel_normals, sizeof(prepel_normals), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlPrepel.iid, prepel_indices, sizeof(prepel_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlPrepel.iid, prepel_indices, sizeof(prepel_indices), GL_STATIC_DRAW);
 
     
     /// ---
@@ -1676,55 +1664,55 @@ int main(int argc, char** argv)
     esBind(GL_ARRAY_BUFFER, &mdlRock[0].vid, rock1_vertices, sizeof(rock1_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[0].nid, rock1_normals, sizeof(rock1_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[0].cid, rock1_colors, sizeof(rock1_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[0].iid, rock1_indices, sizeof(rock1_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[0].iid, rock1_indices, sizeof(rock1_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK2 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[1].vid, rock2_vertices, sizeof(rock2_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[1].nid, rock2_normals, sizeof(rock2_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[1].cid, rock2_colors, sizeof(rock2_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[1].iid, rock2_indices, sizeof(rock2_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[1].iid, rock2_indices, sizeof(rock2_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK3 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[2].vid, rock3_vertices, sizeof(rock3_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[2].nid, rock3_normals, sizeof(rock3_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[2].cid, rock3_colors, sizeof(rock3_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[2].iid, rock3_indices, sizeof(rock3_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[2].iid, rock3_indices, sizeof(rock3_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK4 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[3].vid, rock4_vertices, sizeof(rock4_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[3].nid, rock4_normals, sizeof(rock4_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[3].cid, rock4_colors, sizeof(rock4_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[3].iid, rock4_indices, sizeof(rock4_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[3].iid, rock4_indices, sizeof(rock4_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK5 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[4].vid, rock5_vertices, sizeof(rock5_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[4].nid, rock5_normals, sizeof(rock5_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[4].cid, rock5_colors, sizeof(rock5_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[4].iid, rock5_indices, sizeof(rock5_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[4].iid, rock5_indices, sizeof(rock5_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK6 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[5].vid, rock6_vertices, sizeof(rock6_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[5].nid, rock6_normals, sizeof(rock6_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[5].cid, rock6_colors, sizeof(rock6_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[5].iid, rock6_indices, sizeof(rock6_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[5].iid, rock6_indices, sizeof(rock6_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK7 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[6].vid, rock7_vertices, sizeof(rock7_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[6].nid, rock7_normals, sizeof(rock7_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[6].cid, rock7_colors, sizeof(rock7_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[6].iid, rock7_indices, sizeof(rock7_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[6].iid, rock7_indices, sizeof(rock7_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK8 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[7].vid, rock8_vertices, sizeof(rock8_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[7].nid, rock8_normals, sizeof(rock8_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[7].cid, rock8_colors, sizeof(rock8_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[7].iid, rock8_indices, sizeof(rock8_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[7].iid, rock8_indices, sizeof(rock8_indices), GL_STATIC_DRAW);
 
     // ***** BIND ROCK9 *****
     esBind(GL_ARRAY_BUFFER, &mdlRock[8].vid, rock9_vertices, sizeof(rock9_vertices), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[8].nid, rock9_normals, sizeof(rock9_normals), GL_STATIC_DRAW);
     esBind(GL_ARRAY_BUFFER, &mdlRock[8].cid, rock9_colors, sizeof(rock9_colors), GL_STATIC_DRAW);
-    esBind(GL_ELEMENT_ARRAY_BUFFER, &mdlRock[8].iid, rock9_indices, sizeof(rock9_indices), GL_STATIC_DRAW);
+    esBind(GL_ARRAY_BUFFER, &mdlRock[8].iid, rock9_indices, sizeof(rock9_indices), GL_STATIC_DRAW);
 
 //*************************************
 // compile & link shader programs
