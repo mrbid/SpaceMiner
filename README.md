@@ -53,6 +53,9 @@ It can be hard to appreciate how many triangles are rendered in each frame, excl
 
 ## Downloads
 
+### Web
+https://mrbid.github.io/spaceminer/
+
 ### Snapcraft
 https://snapcraft.io/spaceminer
 
